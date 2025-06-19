@@ -43,7 +43,7 @@
   --border-radius-lg: 24px;
   --border-color: #f4e4d6;
 
-  /* Transiciones */
+  /* Transiciones **/
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.2s ease;
 
