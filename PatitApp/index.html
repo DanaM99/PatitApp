@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patita - Reencuentro de Mascotas Perdidas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h1>Patita</h1>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <i class="fas fa-times" onclick="hideMenu()"></i>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html">Buscar</a></li>
+                    <li><a href="publicar.html">Publicar</a></li>
+                    <li><a href="login.html" id="loginBtn">Iniciar Sesión</a></li>
+                    <li><a href="panel.html" id="panelBtn" style="display: none;">Mi Panel</a></li>
+                </ul>
+            </div>
+            <i class="fas fa-bars" onclick="showMenu()"></i>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Ayudamos a reunir mascotas perdidas con sus familias</h1>
+            <p>Patita conecta a personas que han perdido sus mascotas con quienes han encontrado animales sin identificar</p>
+            <div class="hero-buttons">
+                <a href="publicar.html?tipo=perdida" class="btn btn-primary">Perdí mi mascota</a>
+                <a href="publicar.html?tipo=encontrada" class="btn btn-secondary">Encontré una mascota</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="img/hero-image.png" alt="Mascotas felices">
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <h2>¿Cómo funciona?</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3>Regístrate</h3>
+                <p>Crea una cuenta para acceder a todas las funcionalidades</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h3>Publica</h3>
+                <p>Reporta una mascota perdida o encontrada con todos los detalles</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Busca</h3>
+                <p>Utiliza filtros para encontrar coincidencias en tu zona</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>Contacta</h3>
+                <p>Comunícate directamente con otros usuarios</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="recent-posts">
+        <h2>Mascotas reportadas recientemente</h2>
+        <div class="posts-container" id="recentPosts">
+            <!-- Las tarjetas de mascotas se cargarán dinámicamente con JavaScript -->
+            <div class="loading">Cargando publicaciones recientes...</div>
+        </div>
+        <div class="view-more">
+            <a href="buscar.html" class="btn btn-outline">Ver todas las publicaciones</a>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stat-item">
+            <h3 id="totalMascotas">0</h3>
+            <p>Mascotas reportadas</p>
+        </div>
+        <div class="stat-item">
+            <h3 id="mascotasEncontradas">0</h3>
+            <p>Reencuentros exitosos</p>
+        </div>
+        <div class="stat-item">
+            <h3 id="totalUsuarios">0</h3>
+            <p>Usuarios registrados</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h2>Patita</h2>
+            </div>
+            <div class="footer-links">
+                <h3>Enlaces</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html">Buscar</a></li>
+                    <li><a href="publicar.html">Publicar</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Síguenos</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Patita - Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script src="script/main.js"></script>
+    <script src="script/auth.js"></script>
+    <script src="script/home.js"></script>
+</body>
+</html>

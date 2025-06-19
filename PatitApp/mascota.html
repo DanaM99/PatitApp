@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Mascota - Patita</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h1>Patita</h1>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <i class="fas fa-times" onclick="hideMenu()"></i>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html">Buscar</a></li>
+                    <li><a href="publicar.html">Publicar</a></li>
+                    <li><a href="login.html" id="loginBtn">Iniciar Sesión</a></li>
+                    <li><a href="panel.html" id="panelBtn" style="display: none;">Mi Panel</a></li>
+                </ul>
+            </div>
+            <i class="fas fa-bars" onclick="showMenu()"></i>
+        </nav>
+    </header>
+
+    <section class="pet-detail-container">
+        <div class="loading" id="loadingPet">Cargando información de la mascota...</div>
+        
+        <div class="pet-not-found" id="petNotFound" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <h2>Mascota no encontrada</h2>
+            <p>El reporte que buscas no existe o ha sido eliminado.</p>
+            <a href="buscar.html" class="btn btn-primary">Volver a la búsqueda</a>
+        </div>
+        
+        <div class="pet-detail" id="petDetail" style="display: none;">
+            <div class="pet-detail-header">
+                <div class="pet-status" id="petStatus">
+                    <span class="status-badge active">Activo</span>
+                </div>
+                <div class="pet-type" id="petType">
+                    <span class="type-badge lost">Perdido</span>
+                </div>
+            </div>
+            
+            <div class="pet-detail-content">
+                <div class="pet-detail-image">
+                    <img id="petImage" src="img/placeholder.jpg" alt="Foto de la mascota">
+                </div>
+                
+                <div class="pet-detail-info">
+                    <h1 id="petName">Nombre de la mascota</h1>
+                    
+                    <div class="pet-info-item">
+                        <i class="fas fa-paw"></i>
+                        <span>Tipo: </span>
+                        <strong id="petAnimalType">Perro</strong>
+                    </div>
+                    
+                    <div class="pet-info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Fecha: </span>
+                        <strong id="petDate">01/01/2025</strong>
+                    </div>
+                    
+                    <div class="pet-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Ubicación: </span>
+                        <strong id="petLocation">Palermo, Buenos Aires</strong>
+                    </div>
+                    
+                    <div class="pet-description">
+                        <h3>Descripción</h3>
+                        <p id="petDescription">Descripción de la mascota...</p>
+                    </div>
+                    
+                    <div class="pet-map">
+                        <h3>Ubicación en el mapa</h3>
+                        <div id="petLocationMap" style="height: 250px;"></div>
+                    </div>
+                    
+                    <div class="pet-contact">
+                        <h3>Contacto</h3>
+                        <p>Si tienes información sobre esta mascota, contacta a:</p>
+                        <div class="contact-info" id="contactInfo">
+                            <div class="contact-item">
+                                <i class="fas fa-user"></i>
+                                <span id="contactName">Nombre del usuario</span>
+                            </div>
+                            <div class="contact-item" id="contactPhoneContainer">
+                                <i class="fas fa-phone"></i>
+                                <span id="contactPhone">Teléfono</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span id="contactEmail">email@ejemplo.com</span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-form" id="contactForm">
+                            <h3>Enviar mensaje</h3>
+                            <div class="alert success" id="contactSuccess" style="display: none;"></div>
+                            <div class="alert error" id="contactError" style="display: none;"></div>
+                            
+                            <form id="sendMessageForm">
+                                <input type="hidden" id="petId" name="petId">
+                                
+                                <div class="form-group">
+                                    <label for="senderName">Tu nombre</label>
+                                    <input type="text" id="senderName" name="senderName" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="senderEmail">Tu correo electrónico</label>
+                                    <input type="email" id="senderEmail" name="senderEmail" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="senderPhone">Tu teléfono (opcional)</label>
+                                    <input type="tel" id="senderPhone" name="senderPhone">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="messageContent">Mensaje</label>
+                                    <textarea id="messageContent" name="messageContent" rows="4" required placeholder="Describe dónde viste a la mascota o cualquier información relevante"></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-block">Enviar mensaje</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="pet-actions" id="petActions" style="display: none;">
+                        <button class="btn btn-success" id="markResolvedBtn">
+                            <i class="fas fa-check-circle"></i> Marcar como resuelto
+                        </button>
+                        <button class="btn btn-primary" id="editPetBtn">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger" id="deletePetBtn">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="similar-pets" id="similarPetsSection" style="display: none;">
+        <h2>Mascotas similares en la zona</h2>
+        <div class="pets-grid" id="similarPets">
+            <!-- Las tarjetas de mascotas similares se cargarán dinámicamente -->
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h2>Patita</h2>
+            </div>
+            <div class="footer-links">
+                <h3>Enlaces</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html">Buscar</a></li>
+                    <li><a href="publicar.html">Publicar</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Síguenos</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Patita - Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="confirmation-content">
+            <h3 id="confirmationTitle">¿Estás seguro?</h3>
+            <p id="confirmationMessage">Esta acción no se puede deshacer.</p>
+            <div class="confirmation-buttons">
+                <button class="btn btn-outline" id="cancelConfirmation">Cancelar</button>
+                <button class="btn btn-danger" id="confirmAction">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/pet-detail.js"></script>
+</body>
+</html>
