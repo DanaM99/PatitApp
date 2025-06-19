@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Reporte - Patita</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h1>Patita</h1>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <i class="fas fa-times" onclick="hideMenu()"></i>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html">Buscar</a></li>
+                    <li><a href="publicar.html" class="active">Publicar</a></li>
+                    <li><a href="login.html" id="loginBtn">Iniciar Sesión</a></li>
+                    <li><a href="panel.html" id="panelBtn" style="display: none;">Mi Panel</a></li>
+                </ul>
+            </div>
+            <i class="fas fa-bars" onclick="showMenu()"></i>
+        </nav>
+    </header>
+
+    <section class="publish-container">
+        <div class="publish-header">
+            <h1 id="publishTitle">Publicar reporte</h1>
+            <p>Completa el formulario con todos los datos posibles para aumentar las posibilidades de reencuentro</p>
+        </div>
+
+        <div class="auth-required" id="authRequiredMessage" style="display: none;">
+            <div class="alert warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Debes <a href="login.html">iniciar sesión</a> para publicar un reporte.</p>
+            </div>
+        </div>
+
+        <div class="publish-form" id="publishFormContainer">
+            <div class="alert error" id="publishError" style="display: none;"></div>
+            <div class="alert success" id="publishSuccess" style="display: none;"></div>
+            
+            <form id="publishForm">
+                <div class="form-group">
+                    <label>Tipo de reporte</label>
+                    <div class="report-type-selector">
+                        <div class="report-type" id="reportTypeLost">
+                            <input type="radio" id="typeLost" name="reportType" value="perdida" checked>
+                            <label for="typeLost">
+                                <i class="fas fa-search"></i>
+                                <span>Perdí mi mascota</span>
+                            </label>
+                        </div>
+                        <div class="report-type" id="reportTypeFound">
+                            <input type="radio" id="typeFound" name="reportType" value="encontrada">
+                            <label for="typeFound">
+                                <i class="fas fa-paw"></i>
+                                <span>Encontré una mascota</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="animalType">Tipo de animal</label>
+                    <select id="animalType" name="animalType" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="perro">Perro</option>
+                        <option value="gato">Gato</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="otherAnimalTypeGroup" style="display: none;">
+                    <label for="otherAnimalType">Especificar tipo de animal</label>
+                    <input type="text" id="otherAnimalType" name="otherAnimalType" placeholder="Ej: Conejo, Tortuga, etc.">
+                </div>
+
+                <div class="form-group">
+                    <label for="petName">Nombre de la mascota</label>
+                    <input type="text" id="petName" name="petName" placeholder="Deja en blanco si no lo conoces">
+                </div>
+
+                <div class="form-group">
+                    <label for="petPhoto">Foto de la mascota</label>
+                    <div class="photo-upload">
+                        <input type="file" id="petPhoto" name="petPhoto" accept="image/*" required>
+                        <div class="photo-preview" id="photoPreview">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Haz clic para subir una foto</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lostDate">Fecha</label>
+                    <input type="date" id="lostDate" name="lostDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Ubicación</label>
+                    <input type="text" id="location" name="location" placeholder="Barrio o dirección aproximada" required>
+                    <button type="button" class="btn btn-outline btn-sm" id="useMyLocationBtn">
+                        <i class="fas fa-map-marker-alt"></i> Usar mi ubicación
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Selecciona la ubicación en el mapa</label>
+                    <div id="mapContainer" style="height: 300px;"></div>
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Describe características distintivas, collar, comportamiento, etc." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactPhone">Teléfono de contacto</label>
+                    <input type="tel" id="contactPhone" name="contactPhone" placeholder="Opcional">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block">Publicar reporte</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h2>Patita</h2>
+            </div>
+            <div class="footer-links">
+                <h3>Enlaces</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html">Buscar</a></li>
+                    <li><a href="publicar.html">Publicar</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Síguenos</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Patita - Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script/main.js"></script>
+    <script src="script/auth.js"></script>
+    <script src="script/publish.js"></script>
+</body>
+</html>
