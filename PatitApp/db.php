@@ -1,15 +1,12 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$dbname = "patitapp_db";
+$host = 'localhost';
+$usuario = 'root';
+$contrasena = ''; // Cambiar si usás contraseña
+$base_de_datos = 'patitapp_db';
 
-$conn = new mysqli($host, $user, $pass, $dbname);
+$conexion = new mysqli($host, $usuario, $contrasena, $base_de_datos);
 
-if ($conn->connect_error) {
-    die("❌ Error de conexión: " . $conn->connect_error);
+if ($conexion->connect_error) {
+    die("❌ Error de conexión: " . $conexion->connect_error);
 }
-
-// Línea temporal para testeo:
-echo "✅ Conexión establecida desde db.php";
 ?>
