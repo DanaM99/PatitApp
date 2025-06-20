@@ -18,16 +18,13 @@
                 <h1>Patita</h1>
             </div>
             <div class="nav-links" id="navLinks">
-                <i class="fas fa-times" onclick="hideMenu()"></i>
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
                     <li><a href="buscar.html">Buscar</a></li>
                     <li><a href="publicar.html" class="active">Publicar</a></li>
                     <li><a href="login.html" id="loginBtn">Iniciar Sesión</a></li>
-                    <li><a href="panel.html" id="panelBtn" style="display: none;">Mi Panel</a></li>
                 </ul>
             </div>
-            <i class="fas fa-bars" onclick="showMenu()"></i>
         </nav>
     </header>
 
@@ -49,33 +46,20 @@
             <div class="alert success" id="publishSuccess" style="display: none;"></div>
 
             <form id="publishForm">
+                <!-- Tipo de reporte -->
                 <div class="form-group">
-                    <label>Tipo de reporte</label>
-                    <div class="report-type-selector">
-                        <div class="report-type" id="reportTypeLost">
-                            <input type="radio" id="typeLost" name="reportType" value="perdida" checked>
-                            <label for="typeLost">
-                                <i class="fas fa-search"></i>
-                                <span>Perdí mi mascota</span>
-                            </label>
-                        </div>
-                        <div class="report-type" id="reportTypeFound">
-                            <input type="radio" id="typeFound" name="reportType" value="encontrada">
-                            <label for="typeFound">
-                                <i class="fas fa-paw"></i>
-                                <span>Encontré una mascota</span>
-                            </label>
-                        </div>
-                    </div>
+                    <label for="reportType">Tipo de reporte</label>
+                    <select id="reportType" name="reportType" required>
+                        <!-- Se carga dinámicamente -->
+                    </select>
                 </div>
 
+
+                <!-- Tipo de animal -->
                 <div class="form-group">
                     <label for="animalType">Tipo de animal</label>
                     <select id="animalType" name="animalType" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="perro">Perro</option>
-                        <option value="gato">Gato</option>
-                        <option value="otro">Otro</option>
+                        <!-- Se carga dinámicamente -->
                     </select>
                 </div>
 
@@ -84,6 +68,8 @@
                     <input type="text" id="otherAnimalType" name="otherAnimalType"
                         placeholder="Ej: Conejo, Tortuga, etc.">
                 </div>
+
+
 
                 <div class="form-group">
                     <label for="petName">Nombre de la mascota</label>
@@ -106,26 +92,20 @@
                     <input type="date" id="lostDate" name="lostDate" required>
                 </div>
 
+                <!-- Zona -->
                 <div class="form-group">
-                    <label for="location">Ubicación</label>
-                    <input type="text" id="location" name="location" placeholder="Barrio o dirección aproximada"
-                        required>
-                    <button type="button" class="btn btn-outline btn-sm" id="useMyLocationBtn">
-                        <i class="fas fa-map-marker-alt"></i> Usar mi ubicación
-                    </button>
+                    <label for="zona">Zona</label>
+                    <select id="zona" name="zona" required>
+                        <!-- Se carga dinámicamente -->
+                    </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Selecciona la ubicación en el mapa</label>
-                    <div id="mapContainer" style="height: 300px;"></div>
-                    <input type="hidden" id="latitude" name="latitude">
-                    <input type="hidden" id="longitude" name="longitude">
-                </div>
+
 
                 <div class="form-group">
                     <label for="description">Descripción</label>
                     <textarea id="description" name="description" rows="4"
-                        placeholder="Describe características distintivas, collar, comportamiento, etc."
+                        placeholder="Describe características distintivas, collar, comportamiento, direccion aproximada donde fue visto, etc."
                         required></textarea>
                 </div>
 
@@ -179,8 +159,6 @@
             }
         })
     </script>
-
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="main.js"></script>
     <script src="auth.js"></script>
     <script src="publish.js"></script>

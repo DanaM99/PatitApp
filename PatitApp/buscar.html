@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
+
 <body>
     <header>
         <nav class="navbar">
@@ -16,16 +18,13 @@
                 <h1>Patita</h1>
             </div>
             <div class="nav-links" id="navLinks">
-                <i class="fas fa-times" onclick="hideMenu()"></i>
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
                     <li><a href="buscar.html" class="active">Buscar</a></li>
                     <li><a href="publicar.html">Publicar</a></li>
                     <li><a href="login.html" id="loginBtn">Iniciar Sesión</a></li>
-                    <li><a href="panel.html" id="panelBtn" style="display: none;">Mi Panel</a></li>
                 </ul>
             </div>
-            <i class="fas fa-bars" onclick="showMenu()"></i>
         </nav>
     </header>
 
@@ -106,7 +105,7 @@
                     <p>Intenta con otros filtros o <a href="publicar.html">publica un reporte</a></p>
                 </div>
             </div>
-            
+
             <div id="mapView" style="display: none;">
                 <div id="resultsMap" style="height: 600px;"></div>
             </div>
@@ -161,11 +160,11 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="main.js"></script>
     <script src="auth.js"></script>
     <script src="search.js"></script>
     <script src="session.js"></script>
 
 </body>
+
 </html>
