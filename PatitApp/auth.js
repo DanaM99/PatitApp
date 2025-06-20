@@ -65,3 +65,30 @@ document.getElementById("formRegister").addEventListener("submit", async (e) => 
         errorDiv.innerText = result.message || "Error al registrar usuario.";
     }
 });
+document.getElementById("formLogin").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const errorDiv = document.getElementById("loginError");
+    errorDiv.style.display = "none";
+    errorDiv.innerText = "";
+
+    const response = await fetch("login.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+        alert(`✅ Bienvenido/a ${result.user.name}`);
+        // Podés redirigir a otra página si querés:
+        window.location.href = "index.html";
+    } else {
+        errorDiv.style.display = "block";
+        errorDiv.innerText = result.message || "Error al iniciar sesión.";
+    }
+});

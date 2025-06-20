@@ -1,37 +1,34 @@
 <?php
-session_start();
-include "conexion.php";
+header('Content-Type: application/json');
+include 'db.php';
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email = $_POST["email"] ?? '';
-    $password = $_POST["password"] ?? '';
+$data = json_decode(file_get_contents("php://input"), true);
 
-    if (!$email || !$password) {
-        echo json_encode(["success" => false, "message" => "Faltan datos."]);
-        exit;
-    }
+$email = $data['email'];
+$password = $data['password'];
 
-    // Buscar usuario
-    $stmt = $conn->prepare("SELECT idUsuario, name, password FROM usuarios WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+$consulta = $conexion->prepare("SELECT * FROM usuarios WHERE email = ?");
+$consulta->bind_param("s", $email);
+$consulta->execute();
+$resultado = $consulta->get_result();
 
-    if ($stmt->num_rows === 1) {
-        $stmt->bind_result($idUsuario, $name, $hashedPassword);
-        $stmt->fetch();
-
-        if (password_verify($password, $hashedPassword)) {
-            $_SESSION["idUsuario"] = $idUsuario;
-            $_SESSION["name"] = $name;
-            echo json_encode(["success" => true, "message" => "Login correcto"]);
-        } else {
-            echo json_encode(["success" => false, "message" => "Contraseña incorrecta"]);
-        }
+if ($resultado->num_rows === 1) {
+    $usuario = $resultado->fetch_assoc();
+    
+    if (password_verify($password, $usuario['password'])) {
+        // Autenticación exitosa
+        echo json_encode([
+            "success" => true,
+            "user" => [
+                "id" => $usuario['idUsuario'],
+                "name" => $usuario['name'],
+                "email" => $usuario['email']
+            ]
+        ]);
     } else {
-        echo json_encode(["success" => false, "message" => "Usuario no encontrado"]);
+        echo json_encode(["success" => false, "message" => "❌ Contraseña incorrecta."]);
     }
-
-    $stmt->close();
+} else {
+    echo json_encode(["success" => false, "message" => "❌ Usuario no encontrado."]);
 }
 ?>
