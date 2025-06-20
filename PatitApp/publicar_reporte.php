@@ -1,43 +1,83 @@
 <?php
-include 'db.php';
 header('Content-Type: application/json');
+include 'db.php';
 
-$idUsuario = $_POST['idUsuario'];
-$idTipoReporte = $_POST['reportType'];
-$idTipoAnimal = $_POST['animalType'];
-$idZona = $_POST['zona'];
-$otroAnimal = $_POST['otherAnimalType'] ?? null;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(["success" => false, "message" => "Método no permitido"]);
+    exit;
+}
+
+// Validar datos mínimos
+if (
+    !isset($_POST['idUsuario']) || !isset($_POST['reportType']) || !isset($_POST['animalType']) ||
+    !isset($_POST['zona']) || !isset($_POST['lostDate']) || !isset($_POST['description'])
+) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Faltan datos obligatorios"]);
+    exit;
+}
+
+$idUsuario = intval($_POST['idUsuario']);
+$idTipoReporte = intval($_POST['reportType']);
+$idTipoAnimal = $_POST['animalType'] === 'otro' ? null : intval($_POST['animalType']);
+$otroAnimal = $_POST['animalType'] === 'otro' ? $_POST['otherAnimalType'] : null;
+$idZona = intval($_POST['zona']);
 $nombreMascota = $_POST['petName'] ?? null;
+$ubicacion = $_POST['description']; // Se usa como ubicación aproximada
 $fechaReporte = $_POST['lostDate'];
 $descripcion = $_POST['description'];
-$telefonoContacto = $_POST['contactPhone'] ?? null;
+$telefono = $_POST['contactPhone'] ?? null;
 
-// Cargar imagen
-$fotoNombre = $_FILES['petPhoto']['name'];
-$fotoTmp = $_FILES['petPhoto']['tmp_name'];
-$rutaDestino = "uploads/" . uniqid() . "_" . basename($fotoNombre);
-move_uploaded_file($fotoTmp, $rutaDestino);
-
-// Insertar en reportes
-$sql = $conexion->prepare("INSERT INTO reportes 
-(idUsuario, idZona, idTipoAnimal, idTipoReporte, nombreMascota, otroAnimal, ubicacion, fechaReporte, descripcion, telefonoContacto, idEstadoReporte)
-VALUES (?, ?, ?, ?, ?, ?, 'No definida', ?, ?, ?, 1)");
-
-$sql->bind_param("iiiisssss", 
-    $idUsuario, $idZona, $idTipoAnimal, $idTipoReporte,
-    $nombreMascota, $otroAnimal, $fechaReporte,
-    $descripcion, $telefonoContacto);
-
-if ($sql->execute()) {
-    $idReporte = $conexion->insert_id;
-
-    // Insertar imagen relacionada
-    $stmtImg = $conexion->prepare("INSERT INTO imagenes_reporte (idReporte, urlImagen) VALUES (?, ?)");
-    $stmtImg->bind_param("is", $idReporte, $rutaDestino);
-    $stmtImg->execute();
-
-    echo json_encode(["success" => true]);
-} else {
-    echo json_encode(["success" => false, "message" => $sql->error]);
+// Subida de imagen
+if (!isset($_FILES['petPhoto'])) {
+    echo json_encode(["success" => false, "message" => "Debes subir una imagen"]);
+    exit;
 }
+
+$imagen = $_FILES['petPhoto'];
+$nombreArchivo = uniqid("foto_") . "." . pathinfo($imagen['name'], PATHINFO_EXTENSION);
+$rutaDestino = "uploads/" . $nombreArchivo;
+
+if (!move_uploaded_file($imagen['tmp_name'], $rutaDestino)) {
+    echo json_encode(["success" => false, "message" => "Error al guardar la imagen"]);
+    exit;
+}
+
+// Insertar reporte
+$stmt = $conexion->prepare("
+    INSERT INTO reportes 
+    (idUsuario, idZona, idTipoAnimal, idTipoReporte, nombreMascota, otroAnimal, ubicacion, fechaReporte, descripcion, telefonoContacto)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+");
+
+$stmt->bind_param(
+    "iiiissssss",
+    $idUsuario,
+    $idZona,
+    $idTipoAnimal,
+    $idTipoReporte,
+    $nombreMascota,
+    $otroAnimal,
+    $ubicacion,
+    $fechaReporte,
+    $descripcion,
+    $telefono
+);
+
+if (!$stmt->execute()) {
+    echo json_encode(["success" => false, "message" => "Error al guardar el reporte"]);
+    exit;
+}
+
+$idReporte = $stmt->insert_id;
+$stmt->close();
+
+// Guardar imagen en imagenes_reporte
+$stmtImg = $conexion->prepare("INSERT INTO imagenes_reporte (idReporte, urlImagen) VALUES (?, ?)");
+$stmtImg->bind_param("is", $idReporte, $rutaDestino);
+$stmtImg->execute();
+$stmtImg->close();
+
+echo json_encode(["success" => true, "message" => "Reporte guardado con éxito"]);
 ?>
