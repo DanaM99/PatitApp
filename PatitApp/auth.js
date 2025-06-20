@@ -65,6 +65,8 @@ document.getElementById("formRegister").addEventListener("submit", async (e) => 
         errorDiv.innerText = result.message || "Error al registrar usuario.";
     }
 });
+
+// Inicio de sesión
 document.getElementById("formLogin").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -85,7 +87,9 @@ document.getElementById("formLogin").addEventListener("submit", async (e) => {
 
     if (result.success) {
         alert(`✅ Bienvenido/a ${result.user.name}`);
-        // Podés redirigir a otra página si querés:
+        // GUARDAR EL USUARIO EN LOCALSTORAGE
+        localStorage.setItem("patita_user", JSON.stringify(result.user));
+        // Redirigir a inicio
         window.location.href = "index.html";
     } else {
         errorDiv.style.display = "block";
