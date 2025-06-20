@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Mascotas - Patita</title>
+    <link rel="stylesheet" href="buscar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h1>Patita</h1>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <i class="fas fa-times" onclick="hideMenu()"></i>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html" class="active">Buscar</a></li>
+                    <li><a href="publicar.html">Publicar</a></li>
+                    <li><a href="login.html" id="loginBtn">Iniciar Sesión</a></li>
+                    <li><a href="panel.html" id="panelBtn" style="display: none;">Mi Panel</a></li>
+                </ul>
+            </div>
+            <i class="fas fa-bars" onclick="showMenu()"></i>
+        </nav>
+    </header>
+
+    <section class="search-container">
+        <div class="search-header">
+            <h1>Buscar mascotas</h1>
+            <p>Utiliza los filtros para encontrar mascotas perdidas o encontradas en tu zona</p>
+        </div>
+
+        <div class="search-filters">
+            <form id="searchForm">
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <label for="filterType">Tipo de reporte</label>
+                        <select id="filterType" name="reportType">
+                            <option value="">Todos</option>
+                            <option value="perdida">Perdidas</option>
+                            <option value="encontrada">Encontradas</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="filterAnimal">Tipo de animal</label>
+                        <select id="filterAnimal" name="animalType">
+                            <option value="">Todos</option>
+                            <option value="perro">Perro</option>
+                            <option value="gato">Gato</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="filterZone">Zona</label>
+                        <input type="text" id="filterZone" name="zone" placeholder="Barrio o ciudad">
+                    </div>
+                    <div class="filter-item">
+                        <label for="filterDateFrom">Desde</label>
+                        <input type="date" id="filterDateFrom" name="dateFrom">
+                    </div>
+                    <div class="filter-item">
+                        <label for="filterDateTo">Hasta</label>
+                        <input type="date" id="filterDateTo" name="dateTo">
+                    </div>
+                    <div class="filter-item">
+                        <label for="filterStatus">Estado</label>
+                        <select id="filterStatus" name="status">
+                            <option value="">Todos</option>
+                            <option value="activa">Activa</option>
+                            <option value="resuelta">Resuelta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <button type="button" id="clearFiltersBtn" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Limpiar filtros
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="view-toggle">
+            <button class="view-btn active" id="listViewBtn">
+                <i class="fas fa-list"></i> Lista
+            </button>
+            <button class="view-btn" id="mapViewBtn">
+                <i class="fas fa-map-marked-alt"></i> Mapa
+            </button>
+        </div>
+
+        <div class="search-results">
+            <div id="listView" class="pets-grid">
+                <!-- Las tarjetas de mascotas se cargarán dinámicamente con JavaScript -->
+                <div class="loading" id="loadingResults">Buscando mascotas...</div>
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>No se encontraron resultados</h3>
+                    <p>Intenta con otros filtros o <a href="publicar.html">publica un reporte</a></p>
+                </div>
+            </div>
+            
+            <div id="mapView" style="display: none;">
+                <div id="resultsMap" style="height: 600px;"></div>
+            </div>
+        </div>
+
+        <div class="pagination" id="pagination" style="display: none;">
+            <button id="prevPage" class="btn btn-outline btn-sm">
+                <i class="fas fa-chevron-left"></i> Anterior
+            </button>
+            <span id="pageInfo">Página 1 de 1</span>
+            <button id="nextPage" class="btn btn-outline btn-sm">
+                Siguiente <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="img/logo.png" alt="Logo Patita">
+                <h2>Patita</h2>
+            </div>
+            <div class="footer-links">
+                <h3>Enlaces</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="buscar.html">Buscar</a></li>
+                    <li><a href="publicar.html">Publicar</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Síguenos</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Patita - Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <div class="pet-modal" id="petModal">
+        <div class="pet-modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="pet-modal-body" id="petModalBody">
+                <!-- El contenido del modal se cargará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+    <script src="search.js"></script>
+</body>
+</html>
