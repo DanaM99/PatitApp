@@ -1,5 +1,3 @@
-// publish.js
-
 class PublishPage {
   constructor() {
     this.init();
@@ -113,6 +111,14 @@ class PublishPage {
     const errorElement = document.getElementById("publishError");
     const successElement = document.getElementById("publishSuccess");
 
+    const user = JSON.parse(localStorage.getItem("patita_user"));
+    if (!user || !user.idUsuario) {
+      alert("Error: no se encontró el usuario en sesión.");
+      return;
+    }
+
+    formData.append("idUsuario", user.idUsuario);
+
     if (!this.validateForm(formData, errorElement)) return;
 
     try {
@@ -121,13 +127,17 @@ class PublishPage {
       submitBtn.textContent = "Publicando...";
       submitBtn.disabled = true;
 
-      // Simular envío
       const response = await this.submitReport(formData);
 
       if (response.success) {
         successElement.style.display = "block";
         successElement.textContent = "✅ Reporte publicado exitosamente.";
         form.reset();
+        document.getElementById("photoPreview").innerHTML = `
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Haz clic para subir una foto</p>
+        `;
+        document.getElementById("otherAnimalTypeGroup").style.display = "none";
 
         setTimeout(() => {
           successElement.style.display = "none";
@@ -180,16 +190,16 @@ class PublishPage {
   }
 
   async submitReport(formData) {
-    // Simula un envío exitoso (esto se conecta a tu backend real en producción)
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true });
-      }, 1000);
+    const response = await fetch("publicar_reporte.php", {
+      method: "POST",
+      body: formData
     });
+
+    const result = await response.json();
+    return result;
   }
 }
 
-// Iniciar cuando cargue la página
 if (document.getElementById("publishForm")) {
   new PublishPage();
 }

@@ -20,10 +20,11 @@ if ($resultado->num_rows === 1) {
         echo json_encode([
             "success" => true,
             "user" => [
-                "id" => $usuario['idUsuario'],
-                "name" => $usuario['name'],
-                "email" => $usuario['email']
-            ]
+    "idUsuario" => $usuario['idUsuario'], // CAMBIO AQUÍ
+    "name" => $usuario['name'],
+    "email" => $usuario['email']
+]
+
         ]);
     } else {
         echo json_encode(["success" => false, "message" => "❌ Contraseña incorrecta."]);
