@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
+
 <body>
     <header>
         <nav class="navbar">
@@ -45,7 +47,7 @@
         <div class="publish-form" id="publishFormContainer">
             <div class="alert error" id="publishError" style="display: none;"></div>
             <div class="alert success" id="publishSuccess" style="display: none;"></div>
-            
+
             <form id="publishForm">
                 <div class="form-group">
                     <label>Tipo de reporte</label>
@@ -79,7 +81,8 @@
 
                 <div class="form-group" id="otherAnimalTypeGroup" style="display: none;">
                     <label for="otherAnimalType">Especificar tipo de animal</label>
-                    <input type="text" id="otherAnimalType" name="otherAnimalType" placeholder="Ej: Conejo, Tortuga, etc.">
+                    <input type="text" id="otherAnimalType" name="otherAnimalType"
+                        placeholder="Ej: Conejo, Tortuga, etc.">
                 </div>
 
                 <div class="form-group">
@@ -105,7 +108,8 @@
 
                 <div class="form-group">
                     <label for="location">Ubicación</label>
-                    <input type="text" id="location" name="location" placeholder="Barrio o dirección aproximada" required>
+                    <input type="text" id="location" name="location" placeholder="Barrio o dirección aproximada"
+                        required>
                     <button type="button" class="btn btn-outline btn-sm" id="useMyLocationBtn">
                         <i class="fas fa-map-marker-alt"></i> Usar mi ubicación
                     </button>
@@ -120,7 +124,9 @@
 
                 <div class="form-group">
                     <label for="description">Descripción</label>
-                    <textarea id="description" name="description" rows="4" placeholder="Describe características distintivas, collar, comportamiento, etc." required></textarea>
+                    <textarea id="description" name="description" rows="4"
+                        placeholder="Describe características distintivas, collar, comportamiento, etc."
+                        required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -164,9 +170,22 @@
         </div>
     </footer>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const userData = localStorage.getItem("patita_user")
+            if (!userData) {
+                alert("⚠️ Debes iniciar sesión para publicar un reporte.")
+                window.location.href = "login.html"
+            }
+        })
+    </script>
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="main.js"></script>
     <script src="auth.js"></script>
     <script src="publish.js"></script>
+    <script src="session.js"></script>
+
 </body>
+
 </html>
