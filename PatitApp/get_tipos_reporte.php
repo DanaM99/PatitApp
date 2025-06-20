@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 include 'db.php';
 
 $sql = "SELECT idTipoReporte, nombre FROM tipos_reporte ORDER BY nombre";
-$result = $conn->query($sql);
+$result = $conexion->query($sql);
 
 $data = [];
 while ($row = $result->fetch_assoc()) {

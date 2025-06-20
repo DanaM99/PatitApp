@@ -4,9 +4,9 @@ $user = 'root';
 $password = '';
 $db = 'patitapp_db';
 
-$conexion = new mysqli($host, $user, $password, $db);
+$conn = new mysqli($host, $user, $password, $db);
 
-if ($conexion->connect_error) {
+if ($conn->connect_error) {
     die(json_encode([]));
 }
 
@@ -20,7 +20,7 @@ if (!in_array($table, $validTables)) {
 }
 
 $query = "SELECT nombre FROM $table";
-$result = $conexion->query($query);
+$result = $conn->query($query);
 
 $data = [];
 
