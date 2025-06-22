@@ -18,22 +18,6 @@ class PublishPage {
     this.loadSelectOptions("get_tipos_animales.php", "animalType");
     this.loadSelectOptions("get_zonas.php", "zona");
 
-    // Mostrar campo "otro" si corresponde
-    const animalTypeSelect = document.getElementById("animalType");
-    const otherAnimalTypeGroup = document.getElementById("otherAnimalTypeGroup");
-
-    if (animalTypeSelect) {
-      animalTypeSelect.addEventListener("change", (e) => {
-        if (e.target.value === "otro") {
-          otherAnimalTypeGroup.style.display = "block";
-          document.getElementById("otherAnimalType").required = true;
-        } else {
-          otherAnimalTypeGroup.style.display = "none";
-          document.getElementById("otherAnimalType").required = false;
-        }
-      });
-    }
-
     // Preview de imagen
     const photoInput = document.getElementById("petPhoto");
     const photoPreview = document.getElementById("photoPreview");
@@ -68,13 +52,6 @@ class PublishPage {
         option.textContent = item.nombre;
         select.appendChild(option);
       });
-
-      if (selectId === "animalType") {
-        const otroOption = document.createElement("option");
-        otroOption.value = "otro";
-        otroOption.textContent = "Otro";
-        select.appendChild(otroOption);
-      }
     } catch (err) {
       console.error(`Error cargando ${selectId}:`, err);
     }
@@ -120,7 +97,6 @@ class PublishPage {
     formData.append("idUsuario", user.idUsuario);
     formData.append("ubicacionDescripcion", formData.get("ubicacionDescripcion") || "");
 
-
     if (!this.validateForm(formData, errorElement)) return;
 
     try {
@@ -139,7 +115,6 @@ class PublishPage {
           <i class="fas fa-cloud-upload-alt"></i>
           <p>Haz clic para subir una foto</p>
         `;
-        document.getElementById("otherAnimalTypeGroup").style.display = "none";
 
         setTimeout(() => {
           successElement.style.display = "none";
@@ -173,12 +148,6 @@ class PublishPage {
     if (!animalType) {
       errorElement.style.display = "block";
       errorElement.textContent = "Selecciona el tipo de animal.";
-      return false;
-    }
-
-    if (animalType === "otro" && !formData.get("otherAnimalType")) {
-      errorElement.style.display = "block";
-      errorElement.textContent = "Especifica el tipo de animal.";
       return false;
     }
 

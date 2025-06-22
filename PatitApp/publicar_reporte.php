@@ -47,23 +47,24 @@ if (!move_uploaded_file($imagen['tmp_name'], $rutaDestino)) {
 // Insertar reporte
 $stmt = $conexion->prepare("
     INSERT INTO reportes 
-    (idUsuario, idZona, idTipoAnimal, idTipoReporte, nombreMascota, otroAnimal, ubicacion, fechaReporte, descripcion, telefonoContacto)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (idUsuario, idZona, idTipoAnimal, idTipoReporte, nombreMascota, ubicacion, fechaReporte, descripcion, telefonoContacto)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
 
+
 $stmt->bind_param(
-    "iiiissssss",
+    "iiiisssss", 
     $idUsuario,
     $idZona,
     $idTipoAnimal,
     $idTipoReporte,
     $nombreMascota,
-    $otroAnimal,
     $ubicacion,
     $fechaReporte,
     $descripcion,
     $telefono
 );
+
 
 if (!$stmt->execute()) {
     echo json_encode(["success" => false, "message" => "Error al guardar el reporte"]);
