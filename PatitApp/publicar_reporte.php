@@ -24,7 +24,7 @@ $idTipoAnimal = $_POST['animalType'] === 'otro' ? null : intval($_POST['animalTy
 $otroAnimal = $_POST['animalType'] === 'otro' ? $_POST['otherAnimalType'] : null;
 $idZona = intval($_POST['zona']);
 $nombreMascota = $_POST['petName'] ?? null;
-$ubicacion = $_POST['description']; // Se usa como ubicación aproximada
+$ubicacion = $_POST['ubicacionDescripcion'] ?? ''; // Ahora es la ubicación real
 $fechaReporte = $_POST['lostDate'];
 $descripcion = $_POST['description'];
 $telefono = $_POST['contactPhone'] ?? null;
