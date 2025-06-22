@@ -118,6 +118,8 @@ class PublishPage {
     }
 
     formData.append("idUsuario", user.idUsuario);
+    formData.append("ubicacionDescripcion", formData.get("ubicacionDescripcion") || "");
+
 
     if (!this.validateForm(formData, errorElement)) return;
 
