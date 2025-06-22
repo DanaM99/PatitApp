@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
+
 <body>
     <header>
         <nav class="navbar">
@@ -28,14 +30,14 @@
 
     <section class="pet-detail-container">
         <div class="loading" id="loadingPet">Cargando información de la mascota...</div>
-        
+
         <div class="pet-not-found" id="petNotFound" style="display: none;">
             <i class="fas fa-exclamation-circle"></i>
             <h2>Mascota no encontrada</h2>
             <p>El reporte que buscas no existe o ha sido eliminado.</p>
             <a href="buscar.html" class="btn btn-primary">Volver a la búsqueda</a>
         </div>
-        
+
         <div class="pet-detail" id="petDetail" style="display: none;">
             <div class="pet-detail-header">
                 <div class="pet-status" id="petStatus">
@@ -45,43 +47,40 @@
                     <span class="type-badge lost">Perdido</span>
                 </div>
             </div>
-            
+
             <div class="pet-detail-content">
                 <div class="pet-detail-image">
                     <img id="petImage" src="img/placeholder.jpg" alt="Foto de la mascota">
                 </div>
-                
+
                 <div class="pet-detail-info">
                     <h1 id="petName">Nombre de la mascota</h1>
-                    
+
                     <div class="pet-info-item">
                         <i class="fas fa-paw"></i>
                         <span>Tipo: </span>
                         <strong id="petAnimalType">Perro</strong>
                     </div>
-                    
+
                     <div class="pet-info-item">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Fecha: </span>
                         <strong id="petDate">01/01/2025</strong>
                     </div>
-                    
+
                     <div class="pet-info-item">
                         <i class="fas fa-map-marker-alt"></i>
                         <span>Ubicación: </span>
                         <strong id="petLocation">Palermo, Buenos Aires</strong>
                     </div>
-                    
+
                     <div class="pet-description">
                         <h3>Descripción</h3>
                         <p id="petDescription">Descripción de la mascota...</p>
                     </div>
-                    
-                    <div class="pet-map">
-                        <h3>Ubicación en el mapa</h3>
-                        <div id="petLocationMap" style="height: 250px;"></div>
-                    </div>
-                    
+
+                   
+
                     <div class="pet-contact">
                         <h3>Contacto</h3>
                         <p>Si tienes información sobre esta mascota, contacta a:</p>
@@ -99,40 +98,9 @@
                                 <span id="contactEmail">email@ejemplo.com</span>
                             </div>
                         </div>
-                        
-                        <div class="contact-form" id="contactForm">
-                            <h3>Enviar mensaje</h3>
-                            <div class="alert success" id="contactSuccess" style="display: none;"></div>
-                            <div class="alert error" id="contactError" style="display: none;"></div>
-                            
-                            <form id="sendMessageForm">
-                                <input type="hidden" id="petId" name="petId">
-                                
-                                <div class="form-group">
-                                    <label for="senderName">Tu nombre</label>
-                                    <input type="text" id="senderName" name="senderName" required>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="senderEmail">Tu correo electrónico</label>
-                                    <input type="email" id="senderEmail" name="senderEmail" required>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="senderPhone">Tu teléfono (opcional)</label>
-                                    <input type="tel" id="senderPhone" name="senderPhone">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="messageContent">Mensaje</label>
-                                    <textarea id="messageContent" name="messageContent" rows="4" required placeholder="Describe dónde viste a la mascota o cualquier información relevante"></textarea>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-primary btn-block">Enviar mensaje</button>
-                            </form>
-                        </div>
+
                     </div>
-                    
+
                     <div class="pet-actions" id="petActions" style="display: none;">
                         <button class="btn btn-success" id="markResolvedBtn">
                             <i class="fas fa-check-circle"></i> Marcar como resuelto
@@ -198,8 +166,9 @@
 
     <script src="main.js"></script>
     <script src="auth.js"></script>
-    <script src="pet-detail.js"></script>
+    <script src="pe-details.js"></script>
     <script src="session.js"></script>
 
 </body>
+
 </html>
