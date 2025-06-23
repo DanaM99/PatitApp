@@ -315,10 +315,31 @@ section {
 }
 
 .posts-container {
-  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 30px;
   margin-bottom: 40px;
+}
+
+/* Asegúrate de añadir esta sección a tu archivo style.css */
+.pet-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px; /* Espacio entre las tarjetas */
+    justify-content: center; /* Centra las tarjetas si no llenan toda la fila */
+    align-items: start; /* Alinea las tarjetas en la parte superior */
+}
+
+@media (max-width: 768px) {
+    .pet-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pet-cards-grid {
+        grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
+    }
 }
 
 .pet-card {
