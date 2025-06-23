@@ -1,190 +1,144 @@
-// Funcionalidad de la página de detalle de mascota
-class PetDetailPage {
-  constructor() {
-    this.petId = null;
-    this.pet = null;
-    this.map = null;
-    this.init();
-  }
-
-  init() {
-    this.getPetIdFromUrl();
-    this.setupEventListeners();
-    this.loadPetDetail();
-  }
-
-  getPetIdFromUrl() {
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener el ID del reporte de la URL
     const urlParams = new URLSearchParams(window.location.search);
-    this.petId = urlParams.get("id");
-
-    if (!this.petId) {
-      this.showPetNotFound();
-      return;
+    const reportId = urlParams.get('id');
+    
+    if (reportId) {
+        loadPetDetails(reportId);
+    } else {
+        showPetNotFound();
     }
-  }
+});
 
-  setupEventListeners() {
-    const contactForm = document.getElementById("sendMessageForm");
-    if (contactForm) {
-      contactForm.addEventListener("submit", (e) => {
-        this.handleContactSubmit(e);
-      });
-    }
-  }
-
-  async loadPetDetail() {
-    const loadingEl = document.getElementById("loadingPet");
-    const petNotFoundEl = document.getElementById("petNotFound");
-    const petDetailEl = document.getElementById("petDetail");
-
+async function loadPetDetails(reportId) {
     try {
-      if (loadingEl) loadingEl.style.display = "block";
-      if (petNotFoundEl) petNotFoundEl.style.display = "none";
-      if (petDetailEl) petDetailEl.style.display = "none";
-
-      // Obtener datos reales de la API
-      this.pet = await this.getPetById(this.petId);
-
-      if (!this.pet || this.pet.error) {
-        this.showPetNotFound();
-        return;
-      }
-
-      this.displayPetDetail();
-      this.initMap();
+        const response = await fetch(`get_reporte.php?idReporte=${reportId}`);
+        const petData = await response.json();
+        
+        if (response.ok && petData.id) {
+            displayPetDetails(petData);
+        } else {
+            showPetNotFound();
+        }
     } catch (error) {
-      console.error("Error al cargar mascota:", error);
-      this.showPetNotFound();
-    } finally {
-      if (loadingEl) loadingEl.style.display = "none";
+        console.error('Error al cargar los detalles:', error);
+        showPetNotFound();
     }
-  }
-
-  showPetNotFound() {
-    const loadingEl = document.getElementById("loadingPet");
-    const petNotFoundEl = document.getElementById("petNotFound");
-    const petDetailEl = document.getElementById("petDetail");
-
-    if (loadingEl) loadingEl.style.display = "none";
-    if (petNotFoundEl) petNotFoundEl.style.display = "block";
-    if (petDetailEl) petDetailEl.style.display = "none";
-  }
-
-  displayPetDetail() {
-    const petDetailEl = document.getElementById("petDetail");
-    if (!petDetailEl || !this.pet) return;
-
-    // Elementos principales
-    const petName = document.getElementById("petName");
-    const petImage = document.getElementById("petImage");
-    const petLocation = document.getElementById("petLocation");
-    const petDescription = document.getElementById("petDescription");
-    const petDate = document.getElementById("petDate");
-    const petType = document.getElementById("petType");
-    const petStatus = document.getElementById("petStatus");
-    const contactPhone = document.getElementById("contactPhone");
-
-    // Mostrar datos reales
-    if (petName) petName.textContent = this.pet.name || "Sin nombre";
-    if (petImage) petImage.src = this.pet.photo || "img/placeholder-pet.png";
-    if (petLocation) petLocation.textContent = this.pet.location || "Ubicación no especificada";
-    if (petDescription) petDescription.textContent = this.pet.description || "No hay descripción disponible";
-    if (petDate) petDate.textContent = this.formatDate(this.pet.date) || "Fecha no especificada";
-    if (petType) petType.textContent = this.pet.animal_type || "Tipo no especificado";
-    
-    // Mostrar estado (traducido si es necesario)
-    if (petStatus) {
-      petStatus.textContent = this.pet.status === "resuelto" ? "Resuelto" : "Activo";
-      petStatus.className = this.pet.status === "resuelto" ? "badge badge-secondary" : "badge badge-success";
-    }
-    
-    if (contactPhone) {
-      contactPhone.textContent = this.pet.telefonoContacto || "No disponible";
-      if (this.pet.telefonoContacto) {
-        contactPhone.href = `tel:${this.pet.telefonoContacto}`;
-      }
-    }
-
-    petDetailEl.style.display = "block";
-  }
-
-  async handleContactSubmit(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const messageEl = document.getElementById("contactMessage");
-    
-    try {
-      // Enviar mensaje real a la API
-      const response = await fetch('send_message.php', {
-        method: 'POST',
-        body: formData
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        messageEl.textContent = "Mensaje enviado correctamente";
-        messageEl.className = "alert alert-success";
-        form.reset();
-      } else {
-        throw new Error(result.message || "Error al enviar el mensaje");
-      }
-    } catch (error) {
-      console.error("Error al enviar mensaje:", error);
-      messageEl.textContent = error.message || "Error al enviar el mensaje";
-      messageEl.className = "alert alert-danger";
-    }
-    
-    messageEl.style.display = "block";
-    setTimeout(() => {
-      messageEl.style.display = "none";
-    }, 5000);
-  }
-
-  async getPetById(id) {
-    try {
-      const response = await fetch(`get_reporte.php?id=${id}`);
-      if (!response.ok) throw new Error("Error al obtener el reporte");
-      const data = await response.json();
-      
-      // Verificar si la respuesta contiene datos válidos
-      if (!data || data.error) {
-        throw new Error(data.error || "Datos no válidos recibidos");
-      }
-      
-      return data;
-    } catch (error) {
-      console.error("Error en getPetById:", error);
-      return null;
-    }
-  }
-
-  initMap() {
-    if (!this.pet || !this.pet.ubicacion) return;
-    
-    // Implementación básica del mapa (requiere integración con Google Maps o similar)
-    const mapContainer = document.getElementById("petMap");
-    if (!mapContainer) return;
-    
-    // Aquí iría la lógica para inicializar el mapa con la ubicación real
-    mapContainer.innerHTML = `<div class="map-placeholder">
-      <i class="fas fa-map-marker-alt"></i>
-      <p>Mapa de ubicación: ${this.pet.location}</p>
-    </div>`;
-  }
-
-  formatDate(dateString) {
-    if (!dateString) return "Fecha no especificada";
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('es-ES', options);
-  }
 }
 
-// Inicializar solo si estamos en la página de detalle
-if (document.getElementById("petDetail")) {
-  const petDetailPage = new PetDetailPage();
+function displayPetDetails(pet) {
+    // Ocultar loading y mostrar detalles
+    document.getElementById('loadingPet').style.display = 'none';
+    const petDetail = document.getElementById('petDetail');
+    petDetail.style.display = 'block';
+    
+    // Llenar los datos
+    document.getElementById('contactName').textContent = pet.user_name || 'Usuario desconocido';
+    document.getElementById('contactEmail').textContent = pet.user_email || 'Email no disponible';
+    document.getElementById('petAnimalType').textContent = pet.animal_type || 'No especificado';
+    document.getElementById('petDate').textContent = patitaApp.formatDate(pet.date);
+    document.getElementById('petLocation').textContent = pet.location || 'Ubicación no especificada';
+    document.getElementById('petDescription').textContent = pet.description || 'No hay descripción disponible';
+    
+    // Establecer la imagen
+    const petImage = document.getElementById('petImage');
+    if (pet.photo) {
+        petImage.src = pet.photo;
+    }
+    
+    // Configurar el estado y tipo
+    const statusBadge = document.getElementById('petStatus');
+    const typeBadge = document.getElementById('petType');
+    
+    // Aquí deberías tener lógica para determinar el estado real (no está en tu API actual)
+    statusBadge.innerHTML = '<span class="status-badge active">Activo</span>';
+    
+    if (pet.report_type?.toLowerCase().includes('perd')) {
+        typeBadge.innerHTML = '<span class="type-badge lost">Perdido</span>';
+    } else {
+        typeBadge.innerHTML = '<span class="type-badge found">Encontrado</span>';
+    }
+    
+    // Configurar información de contacto
+    document.getElementById('contactPhone').textContent = pet.phone || 'No disponible';
+    if (!pet.phone) {
+        document.getElementById('contactPhoneContainer').style.display = 'none';
+    }
+    
+    // Verificar si el usuario actual es el dueño del reporte
+    const currentUser = patitaApp.getCurrentUser();
+    const petActions = document.getElementById('petActions');
+    
+    if (currentUser && currentUser.idUsuario === pet.idUsuario) {
+        petActions.style.display = 'block';
+        
+        document.getElementById('markResolvedBtn').onclick = function() {
+            markAsResolved(pet.id);
+        };
+        
+        document.getElementById('editPetBtn').onclick = function() {
+            window.location.href = `publicar.html?edit=${pet.id}`;
+        };
+        
+        document.getElementById('deletePetBtn').onclick = function() {
+            showDeleteConfirmation(pet.id);
+        };
+    }
 }
 
-// Mantener compatibilidad con el objeto global
-window.patitaApp = window.patitaApp || {};
+function showDeleteConfirmation(petId) {
+    // Implementar lógica para mostrar el modal de confirmación
+    const modal = document.getElementById('confirmationModal');
+    modal.style.display = 'block';
+    
+    document.getElementById('confirmationTitle').textContent = 'Eliminar reporte';
+    document.getElementById('confirmationMessage').textContent = '¿Estás seguro que deseas eliminar este reporte? Esta acción no se puede deshacer.';
+    
+    document.getElementById('cancelConfirmation').onclick = function() {
+        modal.style.display = 'none';
+    };
+    
+    document.getElementById('confirmAction').onclick = function() {
+        deletePet(petId);
+        modal.style.display = 'none';
+    };
+}
+
+async function deletePet(petId) {
+    try {
+        const response = await patitaApp.apiRequest(`delete_report.php?id=${petId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.success) {
+            alert('Reporte eliminado correctamente');
+            window.location.href = 'index.html';
+        }
+    } catch (error) {
+        console.error('Error al eliminar:', error);
+        alert('Error al eliminar el reporte');
+    }
+}
+
+async function markAsResolved(petId) {
+    try {
+        const response = await patitaApp.apiRequest(`get_stats.php?id=${petId}`, {
+            method: 'POST'
+        });
+        
+        if (response.success) {
+            alert('Reporte marcado como resuelto');
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error('Error al marcar como resuelto:', error);
+        alert('Error al actualizar el reporte');
+    }
+}
+
+
+function showPetNotFound() {
+    document.getElementById('loadingPet').style.display = 'none';
+    document.getElementById('petNotFound').style.display = 'block';
+}
+
