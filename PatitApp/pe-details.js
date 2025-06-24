@@ -31,60 +31,73 @@ function displayPetDetails(pet) {
     document.getElementById('loadingPet').style.display = 'none';
     const petDetail = document.getElementById('petDetail');
     petDetail.style.display = 'block';
-    
+
     // Llenar los datos
     document.getElementById('contactName').textContent = pet.user_name || 'Usuario desconocido';
     document.getElementById('contactEmail').textContent = pet.user_email || 'Email no disponible';
     document.getElementById('petAnimalType').textContent = pet.animal_type || 'No especificado';
     document.getElementById('petDate').textContent = patitaApp.formatDate(pet.date);
     document.getElementById('petLocation').textContent = pet.location || 'Ubicación no especificada';
+    document.getElementById('petZone').textContent = pet.zona_nombre || 'Zona no especificada';
     document.getElementById('petDescription').textContent = pet.description || 'No hay descripción disponible';
-    
+
     // Establecer la imagen
     const petImage = document.getElementById('petImage');
     if (pet.photo) {
         petImage.src = pet.photo;
     }
-    
+
     // Configurar el estado y tipo
     const statusBadge = document.getElementById('petStatus');
     const typeBadge = document.getElementById('petType');
-    
-    // Aquí deberías tener lógica para determinar el estado real (no está en tu API actual)
-    statusBadge.innerHTML = '<span class="status-badge active">Activo</span>';
-    
+
+    statusBadge.innerHTML = `<span class="status-badge">${pet.report_status}</span>`;
+
     if (pet.report_type?.toLowerCase().includes('perd')) {
         typeBadge.innerHTML = '<span class="type-badge lost">Perdido</span>';
     } else {
         typeBadge.innerHTML = '<span class="type-badge found">Encontrado</span>';
     }
-    
+
     // Configurar información de contacto
     document.getElementById('contactPhone').textContent = pet.phone || 'No disponible';
     if (!pet.phone) {
         document.getElementById('contactPhoneContainer').style.display = 'none';
     }
-    
+
     // Verificar si el usuario actual es el dueño del reporte
     const currentUser = patitaApp.getCurrentUser();
     const petActions = document.getElementById('petActions');
-    
+
     if (currentUser && currentUser.idUsuario === pet.idUsuario) {
         petActions.style.display = 'block';
-        
-        document.getElementById('markResolvedBtn').onclick = function() {
-            markAsResolved(pet.id);
-        };
-        
-        document.getElementById('editPetBtn').onclick = function() {
-            window.location.href = `publicar.html?edit=${pet.id}`;
-        };
-        
+
+        const markResolvedBtn = document.getElementById('markResolvedBtn');
+        const editPetBtn = document.getElementById('editPetBtn');
+
+        if (pet.report_status.toLowerCase() === 'resuelto') {
+            markResolvedBtn.style.display = 'none';
+            editPetBtn.style.display = 'none';  // Ocultar botón editar si está resuelto
+        } else {
+            markResolvedBtn.style.display = 'inline-block';
+            editPetBtn.style.display = 'inline-block'; // Mostrar botón editar si NO está resuelto
+
+            markResolvedBtn.onclick = function() {
+                markAsResolved(pet.id);
+            };
+
+            editPetBtn.onclick = function() {
+                window.location.href = `publicar.html?edit=${pet.id}`;
+            };
+        }
+
+        // El botón eliminar siempre visible para el dueño
         document.getElementById('deletePetBtn').onclick = function() {
             showDeleteConfirmation(pet.id);
         };
     }
 }
+
 
 function showDeleteConfirmation(petId) {
     // Implementar lógica para mostrar el modal de confirmación
@@ -141,4 +154,3 @@ function showPetNotFound() {
     document.getElementById('loadingPet').style.display = 'none';
     document.getElementById('petNotFound').style.display = 'block';
 }
-
