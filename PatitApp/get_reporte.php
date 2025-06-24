@@ -7,31 +7,38 @@ $idReporte = isset($_GET['idReporte']) ? intval($_GET['idReporte']) : null;
 if ($idReporte !== null) {
     // Consulta individual
     $stmt = $conexion->prepare("
-        SELECT 
-            r.idReporte AS id,
-            r.nombreMascota AS name,
-            r.ubicacion AS location,
-            r.fechaReporte AS date,
-            r.descripcion AS description,
-            r.telefonoContacto AS phone,
-            r.idTipoAnimal,
-            r.idTipoReporte,
-            ta.nombre AS animal_type,
-            tr.nombre AS report_type,
-            img.urlImagen AS photo,
-            r.fechaCreacion,
-            r.idUsuario,
-            u.name AS user_name,
-            u.email AS user_email,   -- Agregado para traer email
-            r.idZona
-        FROM reportes r
-        LEFT JOIN tipos_animales ta ON r.idTipoAnimal = ta.idTipoAnimal
-        LEFT JOIN tipos_reporte tr ON r.idTipoReporte = tr.idTipoReporte
-        LEFT JOIN imagenes_reporte img ON r.idReporte = img.idReporte
-        LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
-        WHERE r.idReporte = ?
-        LIMIT 1
-    ");
+    SELECT 
+        r.idReporte AS id,
+        r.nombreMascota AS name,
+        r.ubicacion AS location,
+        r.fechaReporte AS date,
+        r.descripcion AS description,
+        r.telefonoContacto AS phone,
+        r.idTipoAnimal,
+        r.idTipoReporte,
+        ta.nombre AS animal_type,
+        tr.nombre AS report_type,
+        img.urlImagen AS photo,
+        r.fechaCreacion,
+        r.idUsuario,
+        u.name AS user_name,
+        u.email AS user_email,
+        r.idZona,
+        z.nombre AS zona_nombre,          -- Aquí agregamos el nombre de la zona
+        er.nombre AS report_status
+
+    FROM reportes r
+    LEFT JOIN tipos_animales ta ON r.idTipoAnimal = ta.idTipoAnimal
+    LEFT JOIN tipos_reporte tr ON r.idTipoReporte = tr.idTipoReporte
+    LEFT JOIN imagenes_reporte img ON r.idReporte = img.idReporte
+    LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
+    LEFT JOIN estado_reporte er ON r.idEstadoReporte = er.idEstadoReporte
+    LEFT JOIN zonas z ON r.idZona = z.idZona          -- JOIN con la tabla zonas
+
+    WHERE r.idReporte = ?
+    LIMIT 1
+");
+
     $stmt->bind_param("i", $idReporte);
     $stmt->execute();
     $resultado = $stmt->get_result();
@@ -47,29 +54,36 @@ if ($idReporte !== null) {
 } else {
     // Si no hay idReporte, se devuelven todos los reportes (como antes)
     $sql = "
-        SELECT 
-            r.idReporte AS id,
-            r.nombreMascota AS name,
-            r.ubicacion AS location,
-            r.fechaReporte AS date,
-            r.descripcion AS description,
-            r.telefonoContacto AS phone,
-            r.idTipoAnimal,
-            r.idTipoReporte,
-            ta.nombre AS animal_type,
-            tr.nombre AS report_type,
-            img.urlImagen AS photo,
-            r.fechaCreacion,
-            r.idUsuario,
-            u.email AS user_email,
-            r.idZona
-        FROM reportes r
-        LEFT JOIN tipos_animales ta ON r.idTipoAnimal = ta.idTipoAnimal
-        LEFT JOIN tipos_reporte tr ON r.idTipoReporte = tr.idTipoReporte
-        LEFT JOIN imagenes_reporte img ON r.idReporte = img.idReporte
-        LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
-        ORDER BY r.fechaCreacion DESC
-    ";
+    SELECT 
+        r.idReporte AS id,
+        r.nombreMascota AS name,
+        r.ubicacion AS location,
+        r.fechaReporte AS date,
+        r.descripcion AS description,
+        r.telefonoContacto AS phone,
+        r.idTipoAnimal,
+        r.idTipoReporte,
+        ta.nombre AS animal_type,
+        tr.nombre AS report_type,
+        img.urlImagen AS photo,
+        r.fechaCreacion,
+        r.idUsuario,
+        u.email AS user_email,
+        r.idZona,
+        z.nombre AS zona_nombre,         -- Aquí también
+        er.nombre AS report_status
+
+    FROM reportes r
+    LEFT JOIN tipos_animales ta ON r.idTipoAnimal = ta.idTipoAnimal
+    LEFT JOIN tipos_reporte tr ON r.idTipoReporte = tr.idTipoReporte
+    LEFT JOIN imagenes_reporte img ON r.idReporte = img.idReporte
+    LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
+    LEFT JOIN estado_reporte er ON r.idEstadoReporte = er.idEstadoReporte
+    LEFT JOIN zonas z ON r.idZona = z.idZona        -- JOIN con zonas
+
+    ORDER BY r.fechaCreacion DESC
+";
+
 
     $resultado = $conexion->query($sql);
     $reportes = [];

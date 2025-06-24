@@ -17,11 +17,15 @@ $sql = "
         img.urlImagen AS photo,
         r.fechaCreacion,
         r.idUsuario,
-        r.idZona
+        r.idZona,
+        er.nombre AS report_status
     FROM reportes r
     LEFT JOIN tipos_animales ta ON r.idTipoAnimal = ta.idTipoAnimal
     LEFT JOIN tipos_reporte tr ON r.idTipoReporte = tr.idTipoReporte
     LEFT JOIN imagenes_reporte img ON r.idReporte = img.idReporte
+    LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
+    LEFT JOIN estado_reporte er ON r.idEstadoReporte = er.idEstadoReporte
+    WHERE r.idEstadoReporte = 1
     ORDER BY r.fechaCreacion DESC
 ";
 
