@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Obtener el ID del reporte de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const reportId = urlParams.get('id');
-    
+
     if (reportId) {
         loadPetDetails(reportId);
     } else {
@@ -14,7 +14,7 @@ async function loadPetDetails(reportId) {
     try {
         const response = await fetch(`get_reporte.php?idReporte=${reportId}`);
         const petData = await response.json();
-        
+
         if (response.ok && petData.id) {
             displayPetDetails(petData);
         } else {
@@ -33,6 +33,7 @@ function displayPetDetails(pet) {
     petDetail.style.display = 'block';
 
     // Llenar los datos
+    document.getElementById('petName').textContent = pet.name || 'Nombre no disponible';
     document.getElementById('contactName').textContent = pet.user_name || 'Usuario desconocido';
     document.getElementById('contactEmail').textContent = pet.user_email || 'Email no disponible';
     document.getElementById('petAnimalType').textContent = pet.animal_type || 'No especificado';
@@ -82,17 +83,17 @@ function displayPetDetails(pet) {
             markResolvedBtn.style.display = 'inline-block';
             editPetBtn.style.display = 'inline-block'; // Mostrar botón editar si NO está resuelto
 
-            markResolvedBtn.onclick = function() {
+            markResolvedBtn.onclick = function () {
                 markAsResolved(pet.id);
             };
 
-            editPetBtn.onclick = function() {
+            editPetBtn.onclick = function () {
                 window.location.href = `publicar.html?edit=${pet.id}`;
             };
         }
 
         // El botón eliminar siempre visible para el dueño
-        document.getElementById('deletePetBtn').onclick = function() {
+        document.getElementById('deletePetBtn').onclick = function () {
             showDeleteConfirmation(pet.id);
         };
     }
@@ -103,15 +104,15 @@ function showDeleteConfirmation(petId) {
     // Implementar lógica para mostrar el modal de confirmación
     const modal = document.getElementById('confirmationModal');
     modal.style.display = 'block';
-    
+
     document.getElementById('confirmationTitle').textContent = 'Eliminar reporte';
     document.getElementById('confirmationMessage').textContent = '¿Estás seguro que deseas eliminar este reporte? Esta acción no se puede deshacer.';
-    
-    document.getElementById('cancelConfirmation').onclick = function() {
+
+    document.getElementById('cancelConfirmation').onclick = function () {
         modal.style.display = 'none';
     };
-    
-    document.getElementById('confirmAction').onclick = function() {
+
+    document.getElementById('confirmAction').onclick = function () {
         deletePet(petId);
         modal.style.display = 'none';
     };
@@ -122,7 +123,7 @@ async function deletePet(petId) {
         const response = await patitaApp.apiRequest(`delete_report.php?id=${petId}`, {
             method: 'DELETE'
         });
-        
+
         if (response.success) {
             alert('Reporte eliminado correctamente');
             window.location.href = 'index.html';
@@ -138,7 +139,7 @@ async function markAsResolved(petId) {
         const response = await patitaApp.apiRequest(`get_stats.php?id=${petId}`, {
             method: 'POST'
         });
-        
+
         if (response.success) {
             alert('Reporte marcado como resuelto');
             window.location.reload();
