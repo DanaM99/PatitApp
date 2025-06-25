@@ -225,15 +225,39 @@ class PatitaApp {
     modal.style.display = "none";
   }
 
-  contactOwner(petId) {
-    const user = this.getCurrentUser();
-    if (!user) {
-      alert("Debes iniciar sesión para contactar al propietario");
-      window.location.href = "login.html";
+  async contactOwner(petId) {
+  const user = this.getCurrentUser();
+  if (!user) {
+    alert("Debes iniciar sesión para contactar al propietario");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    // Obtener datos del reporte por ID
+    const pet = await this.apiRequest(`get_reporte.php?idReporte=${petId}`);
+
+    if (!pet.phone) {
+      alert("El propietario no ha proporcionado un número de teléfono.");
       return;
     }
-    window.location.href = `mascota.html?id=${petId}#contact`;
+
+    // Limpiar y formatear número
+    const phoneNumber = pet.phone.replace(/\D/g, ""); // Solo números
+
+    // Mensaje opcional
+    const message = encodeURIComponent(`¡Hola! Vi tu publicación en PatitApp sobre la mascota "${pet.name || 'sin nombre'}". ¿Podemos hablar?`);
+
+    // Crear URL de WhatsApp
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+
+    // Redirigir
+    window.open(whatsappUrl, "_blank");
+  } catch (error) {
+    console.error("Error al contactar al dueño:", error);
+    alert("No se pudo obtener el contacto del dueño.");
   }
+}
 
   capitalizeFirst(str) {
     return str?.charAt(0).toUpperCase() + str?.slice(1) || "";
