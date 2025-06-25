@@ -1,7 +1,10 @@
+let reportId; // variable global
+let originalPhotoSrc = ''; // para cancelar imagen seleccionada
+
+
 document.addEventListener('DOMContentLoaded', function () {
-    // Obtener el ID del reporte de la URL
     const urlParams = new URLSearchParams(window.location.search);
-    const reportId = urlParams.get('id');
+    reportId = urlParams.get('id'); // ✅ usamos la global
 
     if (reportId) {
         loadPetDetails(reportId);
@@ -87,82 +90,214 @@ function displayPetDetails(pet) {
                 markAsResolved(pet.id);
             };
 
+
+
             editPetBtn.onclick = function () {
-                window.location.href = `publicar.html?edit=${pet.id}`;
+                const modal = document.getElementById('editModal');
+                modal.style.display = 'flex';
+
+                cargarOpciones().then(() => {
+                    document.getElementById('editName').value = pet.name || '';
+                    document.getElementById('editDescription').value = pet.description || '';
+                    document.getElementById('editPhone').value = pet.phone || '';
+                    document.getElementById('editLocation').value = pet.location || '';
+                    document.getElementById('editDate').value = pet.date || '';
+
+                    document.getElementById('editAnimalType').value = pet.idTipoAnimal || '';
+                    document.getElementById('editReportType').value = pet.idTipoReporte || '';
+                    document.getElementById('editZona').value = pet.idZona || '';
+
+                    // Mostrar imagen original
+                    const photo = pet.photo || 'img/placeholder.jpg';
+                    document.getElementById('currentPhoto').src = photo;
+
+                    // 💾 Guardar la original por si se arrepiente
+                    originalPhotoSrc = photo;
+
+                    // ⚠️ Limpiar input file por si venía con otro valor
+                    document.getElementById('editPhoto').value = '';
+                });
+
+            };
+            async function cargarOpciones() {
+                const [animales, reportes, zonas] = await Promise.all([
+                    fetch('get_tipos_animales.php').then(res => res.json()),
+                    fetch('get_tipos_reporte.php').then(res => res.json()),
+                    fetch('get_zonas.php').then(res => res.json())
+                ]);
+
+                const selectAnimal = document.getElementById('editAnimalType');
+                const selectReporte = document.getElementById('editReportType');
+                const selectZona = document.getElementById('editZona');
+
+                // Limpiar opciones previas
+                selectAnimal.innerHTML = '<option value="">Seleccionar</option>';
+                selectReporte.innerHTML = '<option value="">Seleccionar</option>';
+                selectZona.innerHTML = '<option value="">Seleccionar</option>';
+
+                animales.forEach(a => {
+                    const option = new Option(a.nombre, a.idTipoAnimal);
+                    selectAnimal.add(option);
+                });
+
+                reportes.forEach(r => {
+                    const option = new Option(r.nombre, r.idTipoReporte);
+                    selectReporte.add(option);
+                });
+
+                zonas.forEach(z => {
+                    const option = new Option(z.nombre, z.idZona);
+                    selectZona.add(option);
+                });
+            }
+            document.getElementById('closeEditModal').onclick = function () {
+                document.getElementById('editModal').style.display = 'none';
+            };
+
+            window.onclick = function (event) {
+                const modal = document.getElementById('editModal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+
+            // El botón eliminar siempre visible para el dueño
+            document.getElementById('deletePetBtn').onclick = function () {
+                showDeleteConfirmation(pet.id);
             };
         }
+    }
 
-        // El botón eliminar siempre visible para el dueño
-        document.getElementById('deletePetBtn').onclick = function () {
-            showDeleteConfirmation(pet.id);
+
+    function showDeleteConfirmation(petId) {
+        // Implementar lógica para mostrar el modal de confirmación
+        const modal = document.getElementById('confirmationModal');
+        modal.style.display = 'block';
+
+        document.getElementById('confirmationTitle').textContent = 'Eliminar reporte';
+        document.getElementById('confirmationMessage').textContent = '¿Estás seguro que deseas eliminar este reporte? Esta acción no se puede deshacer.';
+
+        document.getElementById('cancelConfirmation').onclick = function () {
+            modal.style.display = 'none';
+        };
+
+        document.getElementById('confirmAction').onclick = function () {
+            deletePet(petId);
+            modal.style.display = 'none';
         };
     }
-}
 
+    async function deletePet(petId) {
+        console.log('Intentando eliminar reporte con id:', petId);
+        try {
+            const response = await fetch('delete_report.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${petId}`
+            });
 
-function showDeleteConfirmation(petId) {
-    // Implementar lógica para mostrar el modal de confirmación
-    const modal = document.getElementById('confirmationModal');
-    modal.style.display = 'block';
+            const data = await response.json();
+            console.log('Respuesta del servidor:', data);
 
-    document.getElementById('confirmationTitle').textContent = 'Eliminar reporte';
-    document.getElementById('confirmationMessage').textContent = '¿Estás seguro que deseas eliminar este reporte? Esta acción no se puede deshacer.';
-
-    document.getElementById('cancelConfirmation').onclick = function () {
-        modal.style.display = 'none';
-    };
-
-    document.getElementById('confirmAction').onclick = function () {
-        deletePet(petId);
-        modal.style.display = 'none';
-    };
-}
-
-async function deletePet(petId) {
-    console.log('Intentando eliminar reporte con id:', petId);
-    try {
-        const response = await fetch('delete_report.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `id=${petId}`
-        });
-
-        const data = await response.json();
-        console.log('Respuesta del servidor:', data);
-
-        if (data.success) {
-            alert('✅ Reporte eliminado correctamente');
-            window.location.href = 'index.html';
-        } else {
-            alert('❌ No se pudo eliminar el reporte: ' + (data.error || 'Error desconocido'));
+            if (data.success) {
+                alert('✅ Reporte eliminado correctamente');
+                window.location.href = 'index.html';
+            } else {
+                alert('❌ No se pudo eliminar el reporte: ' + (data.error || 'Error desconocido'));
+            }
+        } catch (error) {
+            console.error('Error al eliminar:', error);
+            alert('⚠️ Error de conexión con el servidor');
         }
-    } catch (error) {
-        console.error('Error al eliminar:', error);
-        alert('⚠️ Error de conexión con el servidor');
     }
-}
 
 
-async function markAsResolved(petId) {
-    try {
-        const response = await patitaApp.apiRequest(`get_stats.php?id=${petId}`, {
-            method: 'POST'
-        });
+    async function markAsResolved(petId) {
+        try {
+            const response = await patitaApp.apiRequest(`get_stats.php?id=${petId}`, {
+                method: 'POST'
+            });
 
-        if (response.success) {
-            alert('Reporte marcado como resuelto');
-            window.location.reload();
+            if (response.success) {
+                alert('Reporte marcado como resuelto');
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error al marcar como resuelto:', error);
+            alert('Error al actualizar el reporte');
         }
-    } catch (error) {
-        console.error('Error al marcar como resuelto:', error);
-        alert('Error al actualizar el reporte');
     }
-}
 
 
-function showPetNotFound() {
-    document.getElementById('loadingPet').style.display = 'none';
-    document.getElementById('petNotFound').style.display = 'block';
+    function showPetNotFound() {
+        document.getElementById('loadingPet').style.display = 'none';
+        document.getElementById('petNotFound').style.display = 'block';
+    }
+
+
+
+    document.getElementById('editForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData();
+
+        formData.append('id', reportId); // este es el ID que ya obtuviste con `get_reporte.php`
+        formData.append('name', form.editName.value);
+        formData.append('description', form.editDescription.value);
+        formData.append('phone', form.editPhone.value);
+        formData.append('location', form.editLocation.value);
+        formData.append('date', form.editDate.value);
+        formData.append('idTipoAnimal', form.editAnimalType.value);
+        formData.append('idTipoReporte', form.editReportType.value);
+        formData.append('idZona', form.editZona.value);
+
+        const photoFile = form.editPhoto.files[0];
+        if (photoFile) {
+            formData.append('photo', photoFile);
+        }
+
+        try {
+            const response = await fetch('update_reporte.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert('✅ Cambios guardados correctamente');
+                location.reload();
+            } else {
+                alert('❌ Error al guardar: ' + (data.message || 'Error desconocido'));
+            }
+        } catch (err) {
+            console.error('Error al actualizar:', err);
+            alert('⚠️ Fallo al conectar con el servidor');
+        }
+    });
+
+    const cancelBtn = document.getElementById('cancelPhotoBtn');
+    cancelBtn.style.display = 'none'; // oculto al inicio
+
+    document.getElementById('editPhoto').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                document.getElementById('currentPhoto').src = event.target.result;
+                cancelBtn.style.display = 'inline-block'; // mostrar cuando se selecciona nueva
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    cancelBtn.addEventListener('click', function () {
+        document.getElementById('editPhoto').value = '';
+        document.getElementById('currentPhoto').src = originalPhotoSrc;
+        cancelBtn.style.display = 'none'; // ocultar de nuevo
+    });
+
+
 }

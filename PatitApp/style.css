@@ -1856,3 +1856,134 @@ hr {
     flex-direction: column;
   }
 }
+
+
+
+
+
+/* Estilos para el modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 239, 213, 0.7); /* tono pastel beige translúcido */
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #fff4e6, #ffe0b3);
+  border: 1px solid #ffda9e;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(255, 183, 77, 0.4);
+  padding: 2rem;
+  width: 95%;
+  max-width: 700px; /* ⬅️ más ancho */
+  max-height: 70vh;  /* ⬅️ menos alto */
+  overflow-y: auto;
+  color: #5c4400;
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content h2 {
+  font-size: 1.6rem;
+  color: #cc6600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modal-content label {
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.8rem;
+  color: #a35c00;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ffd699;
+  border-radius: 12px;
+  background: #fff9f0;
+  color: #5c3b00;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+  border-color: #ffb347;
+  box-shadow: 0 0 0 3px rgba(255, 204, 102, 0.3);
+}
+
+.modal-content button {
+  margin-top: 1.5rem;
+  background: #ffcc66;
+  color: #4a3300;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: 0.3s ease;
+}
+
+.modal-content button:hover {
+  background: #ffe9b3;
+  box-shadow: 0 0 15px rgba(255, 224, 102, 0.5);
+}
+
+.modal .close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.4rem;
+  color: #cc6600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.modal .close:hover {
+  color: #a34900;
+  transform: scale(1.1);
+}
+
+#currentPhotoPreview {
+  margin-top: 0.5rem;
+  padding: 8px;
+  background-color: #fff6e5;
+  border-radius: 10px;
+  text-align: center;
+}
+
+#currentPhotoPreview img {
+  max-height: 160px;
+  width: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(255, 192, 115, 0.2);
+}
+
+/* Suave animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
