@@ -119,20 +119,31 @@ function showDeleteConfirmation(petId) {
 }
 
 async function deletePet(petId) {
+    console.log('Intentando eliminar reporte con id:', petId);
     try {
-        const response = await patitaApp.apiRequest(`delete_report.php?id=${petId}`, {
-            method: 'DELETE'
+        const response = await fetch('delete_report.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id=${petId}`
         });
 
-        if (response.success) {
-            alert('Reporte eliminado correctamente');
+        const data = await response.json();
+        console.log('Respuesta del servidor:', data);
+
+        if (data.success) {
+            alert('✅ Reporte eliminado correctamente');
             window.location.href = 'index.html';
+        } else {
+            alert('❌ No se pudo eliminar el reporte: ' + (data.error || 'Error desconocido'));
         }
     } catch (error) {
         console.error('Error al eliminar:', error);
-        alert('Error al eliminar el reporte');
+        alert('⚠️ Error de conexión con el servidor');
     }
 }
+
 
 async function markAsResolved(petId) {
     try {
