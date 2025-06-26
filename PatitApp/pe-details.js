@@ -1,4 +1,4 @@
-let reportId; // variable global
+let reportId; 
 let originalPhotoSrc = ''; // para cancelar imagen seleccionada
 
 document.addEventListener('DOMContentLoaded', function () {
