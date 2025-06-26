@@ -3,9 +3,11 @@ class PublishPage {
     this.init();
   }
 
+
   init() {
     this.setupForm();
   }
+
 
   setupForm() {
     const form = document.getElementById("publishForm");
@@ -13,14 +15,15 @@ class PublishPage {
       form.addEventListener("submit", (e) => this.handleSubmit(e));
     }
 
-    // Cargar combos dinámicos
+
     this.loadSelectOptions("get_tipos_reporte.php", "reportType");
     this.loadSelectOptions("get_tipos_animales.php", "animalType");
     this.loadSelectOptions("get_zonas.php", "zona");
 
-    // Preview de imagen
+
     const photoInput = document.getElementById("petPhoto");
     const photoPreview = document.getElementById("photoPreview");
+
 
     if (photoInput && photoPreview) {
       photoInput.addEventListener("change", (e) => {
@@ -28,7 +31,7 @@ class PublishPage {
       });
     }
 
-    // Fecha máxima (hoy)
+
     const dateInput = document.getElementById("lostDate");
     if (dateInput) {
       const today = new Date().toISOString().split("T")[0];
@@ -37,13 +40,16 @@ class PublishPage {
     }
   }
 
+
   async loadSelectOptions(apiUrl, selectId) {
     try {
       const res = await fetch(apiUrl);
       const data = await res.json();
 
+
       const select = document.getElementById(selectId);
       if (!select) return;
+
 
       select.innerHTML = '<option value="">Seleccionar...</option>';
       data.forEach((item) => {
@@ -57,19 +63,23 @@ class PublishPage {
     }
   }
 
+
   handlePhotoUpload(event, previewElement) {
     const file = event.target.files[0];
     if (!file) return;
 
+
     if (!file.type.startsWith("image/")) {
-      alert("Por favor selecciona un archivo de imagen válido.");
+      Swal.fire("Archivo inválido", "Por favor selecciona un archivo válido.", "warning");
       return;
     }
 
+
     if (file.size > 5 * 1024 * 1024) {
-      alert("La imagen es demasiado grande. Máximo 5MB.");
+      Swal.fire("Imagen muy grande", "La imagen es demasiado grande. Máximo 5MB.", "warning");
       return;
     }
+
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -80,24 +90,28 @@ class PublishPage {
     reader.readAsDataURL(file);
   }
 
+
   async handleSubmit(event) {
     event.preventDefault();
 
+
     const form = event.target;
     const formData = new FormData(form);
-    const errorElement = document.getElementById("publishError");
-    const successElement = document.getElementById("publishSuccess");
+
 
     const user = JSON.parse(localStorage.getItem("patita_user"));
     if (!user || !user.idUsuario) {
-      alert("Error: no se encontró el usuario en sesión.");
+      Swal.fire("Sesión inválida", "No se encontró el usuario en sesión.", "error");
       return;
     }
+
 
     formData.append("idUsuario", user.idUsuario);
     formData.append("ubicacionDescripcion", formData.get("ubicacionDescripcion") || "");
 
-    if (!this.validateForm(formData, errorElement)) return;
+
+    if (!this.validateForm(formData)) return;
+
 
     try {
       const submitBtn = form.querySelector('button[type="submit"]');
@@ -105,28 +119,25 @@ class PublishPage {
       submitBtn.textContent = "Publicando...";
       submitBtn.disabled = true;
 
+
       const response = await this.submitReport(formData);
 
+
       if (response.success) {
-        successElement.style.display = "block";
-        successElement.textContent = "✅ Reporte publicado exitosamente.";
+        Swal.fire("¡Éxito!", "Reporte publicado exitosamente.", "success");
+
+
         form.reset();
         document.getElementById("photoPreview").innerHTML = `
           <i class="fas fa-cloud-upload-alt"></i>
           <p>Haz clic para subir una foto</p>
         `;
-
-        setTimeout(() => {
-          successElement.style.display = "none";
-        }, 3000);
       } else {
-        errorElement.style.display = "block";
-        errorElement.textContent = response.message || "Error al publicar.";
+        Swal.fire("Error", response.message || "Error al publicar.", "error");
       }
     } catch (err) {
       console.error("Error al publicar:", err);
-      errorElement.style.display = "block";
-      errorElement.textContent = "Error inesperado al publicar el reporte.";
+      Swal.fire("Error inesperado", "Ocurrió un error al publicar el reporte.", "error");
     } finally {
       const submitBtn = form.querySelector('button[type="submit"]');
       submitBtn.textContent = "Publicar reporte";
@@ -134,31 +145,29 @@ class PublishPage {
     }
   }
 
-  validateForm(formData, errorElement) {
-    const reportType = formData.get("reportType");
-    const animalType = formData.get("animalType");
-    const description = formData.get("description");
 
-    if (!reportType) {
-      errorElement.style.display = "block";
-      errorElement.textContent = "Selecciona el tipo de reporte.";
+  validateForm(formData) {
+    if (!formData.get("reportType")) {
+      Swal.fire("Falta información", "Selecciona el tipo de reporte.", "warning");
       return false;
     }
 
-    if (!animalType) {
-      errorElement.style.display = "block";
-      errorElement.textContent = "Selecciona el tipo de animal.";
+
+    if (!formData.get("animalType")) {
+      Swal.fire("Falta información", "Selecciona el tipo de animal.", "warning");
       return false;
     }
 
-    if (!description.trim()) {
-      errorElement.style.display = "block";
-      errorElement.textContent = "Ingresa una descripción.";
+
+    if (!formData.get("description")?.trim()) {
+      Swal.fire("Falta información", "Ingresa una descripción.", "warning");
       return false;
     }
+
 
     return true;
   }
+
 
   async submitReport(formData) {
     const response = await fetch("publicar_reporte.php", {
@@ -166,10 +175,11 @@ class PublishPage {
       body: formData
     });
 
-    const result = await response.json();
-    return result;
+
+    return await response.json();
   }
 }
+
 
 if (document.getElementById("publishForm")) {
   new PublishPage();
