@@ -29,7 +29,7 @@ document.getElementById("backToLoginBtn").onclick = () => {
     registerTab.classList.remove("active");
 };
 
-// Registro
+// Registrarse
 document.getElementById("formRegister").addEventListener("submit", async (e) => {
     e.preventDefault();
 

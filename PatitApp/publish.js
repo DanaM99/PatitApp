@@ -59,7 +59,7 @@ class PublishPage {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      Swal.fire("Archivo inválido", "Por favor selecciona un archivo de imagen válido.", "warning");
+      Swal.fire("Archivo inválido", "Por favor selecciona un archivo válido.", "warning");
       return;
     }
 

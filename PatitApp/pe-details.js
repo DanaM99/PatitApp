@@ -276,7 +276,6 @@ async function openEditModal(pet) {
     const photo = pet.photo || '/placeholder.svg';
     document.getElementById('currentPhoto').src = photo;
     originalPhotoSrc = photo;
-
     document.getElementById('editPhoto').value = '';
 }
 
