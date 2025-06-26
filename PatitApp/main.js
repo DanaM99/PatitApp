@@ -1,6 +1,6 @@
 class PatitaApp {
   constructor() {
-    this.apiUrl = "get_reportes.php"; // Asegurate de que esté correctamente configurado si usás rutas relativas
+    this.apiUrl = "get_reportes.php";
     this.init();
   }
 
@@ -146,18 +146,24 @@ class PatitaApp {
     return this.formatDate(dateString);
   }
 
+  capitalizeFirst(str) {
+    return str?.charAt(0).toUpperCase() + str?.slice(1) || "";
+  }
+
   createPetCard(pet) {
     const card = document.createElement("div");
     card.className = "pet-card";
     card.onclick = () => this.openPetModal(pet);
 
-    const statusBadge = pet.status === "resuelto"
-      ? '<span class="badge badge-secondary">Resuelto</span>'
-      : '<span class="badge badge-success">Activo</span>';
+    const estado = pet.idEstadoReporte == 2 ? "Resuelto" : "Activo";
+    const tipo = pet.idTipoReporte == 1
+      ? pet.idEstadoReporte == 2
+        ? "Encontrado"
+        : "Perdido"
+      : "Encontrado";
 
-    const typeBadge = pet.report_type?.toLowerCase().includes("perd")
-      ? '<span class="badge badge-danger">Perdido</span>'
-      : '<span class="badge badge-warning">Encontrado</span>';
+    const statusBadge = `<span class="badge ${estado === "Resuelto" ? "badge-secondary" : "badge-success"}">${estado}</span>`;
+    const typeBadge = `<span class="badge ${tipo === "Perdido" ? "badge-danger" : "badge-warning"}">${tipo}</span>`;
 
     card.innerHTML = `
       <div class="pet-card-image">
@@ -180,6 +186,7 @@ class PatitaApp {
         </div>
       </div>
     `;
+
     return card;
   }
 
@@ -188,16 +195,19 @@ class PatitaApp {
     const modalBody = document.getElementById("petModalBody");
     if (!modal || !modalBody) return;
 
+    const estado = pet.idEstadoReporte == 2 ? "Resuelto" : "Activo";
+    const tipo = pet.idTipoReporte == 1
+      ? pet.idEstadoReporte == 2
+        ? "Encontrado"
+        : "Perdido"
+      : "Encontrado";
+
     modalBody.innerHTML = `
       <div class="pet-modal-header">
         <h2>${pet.name || "Sin nombre"}</h2>
         <div class="pet-modal-badges">
-          ${pet.status === "resuelto"
-            ? '<span class="badge badge-secondary">Resuelto</span>'
-            : '<span class="badge badge-success">Activo</span>'}
-          ${pet.report_type?.toLowerCase().includes("perd")
-            ? '<span class="badge badge-danger">Perdido</span>'
-            : '<span class="badge badge-warning">Encontrado</span>'}
+          <span class="badge badge-${estado === "Resuelto" ? "secondary" : "success"}">${estado}</span>
+          <span class="badge badge-${tipo === "Perdido" ? "danger" : "warning"}">${tipo}</span>
         </div>
       </div>
       <div class="pet-modal-content-body">
@@ -220,7 +230,6 @@ class PatitaApp {
     const closeBtn = modal.querySelector(".close-modal");
     if (closeBtn) closeBtn.onclick = () => this.closeModal(modal);
   }
-
   closeModal(modal) {
     modal.style.display = "none";
   }
