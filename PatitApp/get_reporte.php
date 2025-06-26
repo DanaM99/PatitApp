@@ -4,9 +4,7 @@ include 'db.php';
 
 $idReporte = isset($_GET['idReporte']) ? intval($_GET['idReporte']) : null;
 
-if ($idReporte !== null) {
-    // Consulta individual
-    $stmt = $conexion->prepare("
+$sqlBase = "
     SELECT 
         r.idReporte AS id,
         r.nombreMascota AS name,
@@ -15,30 +13,32 @@ if ($idReporte !== null) {
         r.descripcion AS description,
         r.telefonoContacto AS phone,
         r.idTipoAnimal,
-        r.idTipoReporte,
         ta.nombre AS animal_type,
+        r.idTipoReporte,
         tr.nombre AS report_type,
+        r.idEstadoReporte,
+        er.nombre AS report_status,
         img.urlImagen AS photo,
         r.fechaCreacion,
         r.idUsuario,
-        u.name AS user_name,
+        u.name AS user_name,             -- 👈 agregado a ambas consultas
         u.email AS user_email,
         r.idZona,
-        z.nombre AS zona_nombre,          -- Aquí agregamos el nombre de la zona
-        er.nombre AS report_status
-
+        z.nombre AS zona_nombre
     FROM reportes r
     LEFT JOIN tipos_animales ta ON r.idTipoAnimal = ta.idTipoAnimal
     LEFT JOIN tipos_reporte tr ON r.idTipoReporte = tr.idTipoReporte
     LEFT JOIN imagenes_reporte img ON r.idReporte = img.idReporte
     LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
     LEFT JOIN estado_reporte er ON r.idEstadoReporte = er.idEstadoReporte
-    LEFT JOIN zonas z ON r.idZona = z.idZona          -- JOIN con la tabla zonas
+    LEFT JOIN zonas z ON r.idZona = z.idZona
+";
 
-    WHERE r.idReporte = ?
-    LIMIT 1
-");
+if ($idReporte !== null) {
+    // 🔍 Consulta individual
+    $sql = $sqlBase . " WHERE r.idReporte = ? LIMIT 1";
 
+    $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $idReporte);
     $stmt->execute();
     $resultado = $stmt->get_result();
@@ -52,38 +52,8 @@ if ($idReporte !== null) {
 
     $stmt->close();
 } else {
-    // Si no hay idReporte, se devuelven todos los reportes (como antes)
-    $sql = "
-    SELECT 
-        r.idReporte AS id,
-        r.nombreMascota AS name,
-        r.ubicacion AS location,
-        r.fechaReporte AS date,
-        r.descripcion AS description,
-        r.telefonoContacto AS phone,
-        r.idTipoAnimal,
-        r.idTipoReporte,
-        ta.nombre AS animal_type,
-        tr.nombre AS report_type,
-        img.urlImagen AS photo,
-        r.fechaCreacion,
-        r.idUsuario,
-        u.email AS user_email,
-        r.idZona,
-        z.nombre AS zona_nombre,         -- Aquí también
-        er.nombre AS report_status
-
-    FROM reportes r
-    LEFT JOIN tipos_animales ta ON r.idTipoAnimal = ta.idTipoAnimal
-    LEFT JOIN tipos_reporte tr ON r.idTipoReporte = tr.idTipoReporte
-    LEFT JOIN imagenes_reporte img ON r.idReporte = img.idReporte
-    LEFT JOIN usuarios u ON r.idUsuario = u.idUsuario
-    LEFT JOIN estado_reporte er ON r.idEstadoReporte = er.idEstadoReporte
-    LEFT JOIN zonas z ON r.idZona = z.idZona        -- JOIN con zonas
-
-    ORDER BY r.fechaCreacion DESC
-";
-
+    // 📋 Consulta general
+    $sql = $sqlBase . " ORDER BY r.fechaCreacion DESC";
 
     $resultado = $conexion->query($sql);
     $reportes = [];
