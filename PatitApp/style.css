@@ -818,7 +818,7 @@ section {
 
 /* Footer mejorado */
 footer {
-  background: linear-gradient(135deg, var(--text-color) 0%, var(--text-secondary) 100%);
+  background: linear-gradient(135deg, #ffb366 0%, #8b4513 100%);
   color: white;
   padding: 80px 24px 24px;
   margin-top: 80px;
