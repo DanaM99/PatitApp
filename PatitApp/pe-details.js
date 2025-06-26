@@ -1,9 +1,12 @@
+
 let reportId; // variable global
 let originalPhotoSrc = ''; // para cancelar imagen seleccionada
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     reportId = urlParams.get('id');
+
 
     if (reportId) {
         loadPetDetails(reportId);
@@ -11,13 +14,16 @@ document.addEventListener('DOMContentLoaded', function () {
         showPetNotFound();
     }
 
+
     setupEditModalHandlers();
 });
+
 
 async function loadPetDetails(reportId) {
     try {
         const response = await fetch(`get_reporte.php?idReporte=${reportId}`);
         const pet = await response.json();
+
 
         if (response.ok && pet.id) {
             displayPetDetails(pet);
@@ -30,10 +36,12 @@ async function loadPetDetails(reportId) {
     }
 }
 
+
 function displayPetDetails(pet) {
     document.getElementById('loadingPet').style.display = 'none';
     const petDetail = document.getElementById('petDetail');
     petDetail.style.display = 'block';
+
 
     // Mostrar datos
     document.getElementById('petName').textContent = pet.name || 'Nombre no disponible';
@@ -45,17 +53,19 @@ function displayPetDetails(pet) {
     document.getElementById('petZone').textContent = pet.zona_nombre || 'Zona no especificada';
     document.getElementById('petDescription').textContent = pet.description || 'No hay descripción disponible';
 
-    // Imagen
+
     const petImage = document.getElementById('petImage');
     petImage.src = pet.photo || '/placeholder.svg';
 
-    // Estado y tipo
+
     const statusBadge = document.getElementById('petStatus');
     const typeBadge = document.getElementById('petType');
+
 
     statusBadge.innerHTML = pet.report_status
         ? `<span class="status-badge ${pet.report_status.toLowerCase() === 'resuelto' ? 'resolved' : 'active'}">${pet.report_status}</span>`
         : '';
+
 
     if (pet.report_type?.toLowerCase().includes('perd')) {
         typeBadge.innerHTML = '<span class="type-badge lost">Perdido</span>';
@@ -63,7 +73,7 @@ function displayPetDetails(pet) {
         typeBadge.innerHTML = '<span class="type-badge found">Encontrado</span>';
     }
 
-    // Teléfono
+
     document.getElementById('contactPhone').textContent = pet.phone || 'No disponible';
     if (!pet.phone) {
         document.getElementById('contactPhoneContainer').style.display = 'none';
@@ -71,14 +81,16 @@ function displayPetDetails(pet) {
         document.getElementById('contactPhoneContainer').style.display = 'block';
     }
 
-    // Acciones para dueño
+
     const currentUser = patitaApp.getCurrentUser();
     const petActions = document.getElementById('petActions');
     if (currentUser && currentUser.idUsuario === pet.idUsuario) {
         petActions.style.display = 'block';
 
+
         const markResolvedBtn = document.getElementById('markResolvedBtn');
         const editPetBtn = document.getElementById('editPetBtn');
+
 
         if (pet.report_status?.toLowerCase() === 'resuelto') {
             markResolvedBtn.style.display = 'none';
@@ -87,9 +99,11 @@ function displayPetDetails(pet) {
             markResolvedBtn.style.display = 'inline-block';
             editPetBtn.style.display = 'inline-block';
 
+
             markResolvedBtn.onclick = () => markAsResolved(pet.id);
             editPetBtn.onclick = () => openEditModal(pet);
         }
+
 
         document.getElementById('deletePetBtn').onclick = () => showDeleteConfirmation(pet.id);
     } else {
@@ -97,22 +111,33 @@ function displayPetDetails(pet) {
     }
 }
 
+
+function showPetNotFound() {
+    document.getElementById('loadingPet').style.display = 'none';
+    document.getElementById('petNotFound').style.display = 'block';
+}
+
+
 function showDeleteConfirmation(petId) {
     const modal = document.getElementById('confirmationModal');
     modal.style.display = 'block';
 
+
     document.getElementById('confirmationTitle').textContent = 'Eliminar reporte';
     document.getElementById('confirmationMessage').textContent = '¿Estás seguro que deseas eliminar este reporte? Esta acción no se puede deshacer.';
+
 
     document.getElementById('cancelConfirmation').onclick = () => {
         modal.style.display = 'none';
     };
+
 
     document.getElementById('confirmAction').onclick = () => {
         deletePet(petId);
         modal.style.display = 'none';
     };
 }
+
 
 async function deletePet(petId) {
     try {
@@ -122,19 +147,37 @@ async function deletePet(petId) {
             body: `id=${petId}`
         });
 
+
         const data = await response.json();
 
+
         if (data.success) {
-            alert('✅ Reporte eliminado correctamente');
-            window.location.href = 'index.html';
+            Swal.fire({
+                icon: 'success',
+                title: '¡Eliminado!',
+                text: 'El reporte fue eliminado correctamente',
+            }).then(() => {
+                window.location.href = 'index.html';
+            });
         } else {
-            alert('❌ No se pudo eliminar el reporte: ' + (data.error || 'Error desconocido'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo eliminar el reporte: ' + (data.error || 'Error desconocido'),
+            });
         }
+
+
     } catch (error) {
         console.error('Error al eliminar:', error);
-        alert('⚠️ Error de conexión con el servidor');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor.',
+        });
     }
 }
+
 
 async function markAsResolved(petId) {
     try {
@@ -142,29 +185,41 @@ async function markAsResolved(petId) {
             method: 'POST'
         });
 
+
         if (response.success) {
-            alert('Reporte marcado como resuelto');
-            window.location.reload();
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Reporte marcado como resuelto',
+            }).then(() => {
+                window.location.reload();
+            });
         } else {
-            alert(response.message || 'No se pudo actualizar el reporte');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message || 'No se pudo actualizar el reporte',
+            });
         }
+
+
     } catch (error) {
         console.error('Error al marcar como resuelto:', error);
-        alert('Error al actualizar el reporte');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al actualizar el reporte.',
+        });
     }
 }
 
-function showPetNotFound() {
-    document.getElementById('loadingPet').style.display = 'none';
-    document.getElementById('petNotFound').style.display = 'block';
-}
 
 // --- Edición ---
-
 function setupEditModalHandlers() {
     document.getElementById('closeEditModal').onclick = () => {
         document.getElementById('editModal').style.display = 'none';
     };
+
 
     window.onclick = function (event) {
         const modal = document.getElementById('editModal');
@@ -173,8 +228,10 @@ function setupEditModalHandlers() {
         }
     };
 
+
     const cancelBtn = document.getElementById('cancelPhotoBtn');
     cancelBtn.style.display = 'none';
+
 
     document.getElementById('editPhoto').addEventListener('change', function (e) {
         const file = e.target.files[0];
@@ -188,17 +245,21 @@ function setupEditModalHandlers() {
         }
     });
 
+
     cancelBtn.addEventListener('click', () => {
         document.getElementById('editPhoto').value = '';
         document.getElementById('currentPhoto').src = originalPhotoSrc;
         cancelBtn.style.display = 'none';
     });
 
+
     document.getElementById('editForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
+
         const form = e.target;
         const formData = new FormData();
+
 
         formData.append('id', reportId);
         formData.append('name', form.editName.value);
@@ -210,16 +271,19 @@ function setupEditModalHandlers() {
         formData.append('idTipoReporte', form.editReportType.value);
         formData.append('idZona', form.editZona.value);
 
+
         const photoFile = form.editPhoto.files[0];
         if (photoFile) {
             formData.append('photo', photoFile);
         }
+
 
         try {
             const response = await fetch('update_reporte.php', {
                 method: 'POST',
                 body: formData
             });
+
 
             const data = await response.json();
             if (data.success) {
@@ -235,14 +299,15 @@ function setupEditModalHandlers() {
     });
 }
 
+
 async function openEditModal(pet) {
     const modal = document.getElementById('editModal');
     modal.style.display = 'flex';
 
-    // Carga select opciones
+
     await cargarOpciones();
 
-    // Rellenar campos con info pet
+
     document.getElementById('editName').value = pet.name || '';
     document.getElementById('editDescription').value = pet.description || '';
     document.getElementById('editPhone').value = pet.phone || '';
@@ -252,12 +317,13 @@ async function openEditModal(pet) {
     document.getElementById('editReportType').value = pet.idTipoReporte || '';
     document.getElementById('editZona').value = pet.idZona || '';
 
+
     const photo = pet.photo || '/placeholder.svg';
     document.getElementById('currentPhoto').src = photo;
     originalPhotoSrc = photo;
-
     document.getElementById('editPhoto').value = '';
 }
+
 
 async function cargarOpciones() {
     const [animales, reportes, zonas] = await Promise.all([
@@ -266,15 +332,20 @@ async function cargarOpciones() {
         fetch('get_zonas.php').then(res => res.json())
     ]);
 
+
     const selectAnimal = document.getElementById('editAnimalType');
     const selectReporte = document.getElementById('editReportType');
     const selectZona = document.getElementById('editZona');
+
 
     selectAnimal.innerHTML = '<option value="">Seleccionar</option>';
     selectReporte.innerHTML = '<option value="">Seleccionar</option>';
     selectZona.innerHTML = '<option value="">Seleccionar</option>';
 
+
     animales.forEach(a => selectAnimal.add(new Option(a.nombre, a.idTipoAnimal)));
     reportes.forEach(r => selectReporte.add(new Option(r.nombre, r.idTipoReporte)));
     zonas.forEach(z => selectZona.add(new Option(z.nombre, z.idZona)));
 }
+
+
