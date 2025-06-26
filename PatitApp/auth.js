@@ -43,8 +43,12 @@ document.getElementById("formRegister").addEventListener("submit", async (e) => 
     errorDiv.innerText = "";
 
     if (password !== confirmPassword) {
-        errorDiv.style.display = "block";
-        errorDiv.innerText = "Las contraseñas no coinciden.";
+        Swal.fire({
+            icon: 'warning',
+            title: 'Contraseñas distintas',
+            text: 'Las contraseñas no coinciden.',
+            confirmButtonText: 'Corregir'
+        });
         return;
     }
 
@@ -57,12 +61,27 @@ document.getElementById("formRegister").addEventListener("submit", async (e) => 
     const result = await response.json();
 
     if (result.success) {
-        alert("✅ Usuario registrado con éxito.");
+        Swal.fire({
+            icon: 'success',
+            title: 'Registro exitoso',
+            text: 'Usuario registrado con éxito.',
+            confirmButtonText: 'Aceptar'
+        });
         document.getElementById("formRegister").reset();
         loginTab.click(); // Volver al login
     } else {
-        errorDiv.style.display = "block";
-        errorDiv.innerText = result.message || "Error al registrar usuario.";
+        Swal.fire({
+            icon: 'warning',
+            title: 'Correo ya registrado',
+            text: result.message || "Ese correo ya está en uso.",
+            showCancelButton: true,
+            confirmButtonText: 'Iniciar sesión',
+            cancelButtonText: 'Cancelar'
+        }).then((res) => {
+            if (res.isConfirmed) {
+                loginTab.click(); // Ir al login
+            }
+        });
     }
 });
 
@@ -86,13 +105,24 @@ document.getElementById("formLogin").addEventListener("submit", async (e) => {
     const result = await response.json();
 
     if (result.success) {
-        alert(`✅ Bienvenido/a ${result.user.name}`);
-        // GUARDAR EL USUARIO EN LOCALSTORAGE
-        localStorage.setItem("patita_user", JSON.stringify(result.user));
-        // Redirigir a inicio
-        window.location.href = "index.html";
+        Swal.fire({
+            icon: 'success',
+            title: `¡Bienvenido/a ${result.user.name}!`,
+            text: 'Inicio de sesión exitoso.',
+            confirmButtonText: 'Entrar'
+        }).then(() => {
+            // GUARDAR EL USUARIO EN LOCALSTORAGE
+            localStorage.setItem("patita_user", JSON.stringify(result.user));
+            // Redirigir a inicio
+            window.location.href = "index.html";
+        });
+
     } else {
-        errorDiv.style.display = "block";
-        errorDiv.innerText = result.message || "Error al iniciar sesión.";
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al iniciar sesión',
+            text: result.message || "Error desconocido.",
+            confirmButtonText: 'Intentar de nuevo'
+        });
     }
 });

@@ -45,11 +45,9 @@ function displayPetDetails(pet) {
     document.getElementById('petZone').textContent = pet.zona_nombre || 'Zona no especificada';
     document.getElementById('petDescription').textContent = pet.description || 'No hay descripción disponible';
 
-    // Imagen
     const petImage = document.getElementById('petImage');
     petImage.src = pet.photo || '/placeholder.svg';
 
-    // Estado y tipo
     const statusBadge = document.getElementById('petStatus');
     const typeBadge = document.getElementById('petType');
 
@@ -63,7 +61,6 @@ function displayPetDetails(pet) {
         typeBadge.innerHTML = '<span class="type-badge found">Encontrado</span>';
     }
 
-    // Teléfono
     document.getElementById('contactPhone').textContent = pet.phone || 'No disponible';
     if (!pet.phone) {
         document.getElementById('contactPhoneContainer').style.display = 'none';
@@ -71,7 +68,6 @@ function displayPetDetails(pet) {
         document.getElementById('contactPhoneContainer').style.display = 'block';
     }
 
-    // Acciones para dueño
     const currentUser = patitaApp.getCurrentUser();
     const petActions = document.getElementById('petActions');
     if (currentUser && currentUser.idUsuario === pet.idUsuario) {
@@ -95,6 +91,11 @@ function displayPetDetails(pet) {
     } else {
         petActions.style.display = 'none';
     }
+}
+
+function showPetNotFound() {
+    document.getElementById('loadingPet').style.display = 'none';
+    document.getElementById('petNotFound').style.display = 'block';
 }
 
 function showDeleteConfirmation(petId) {
@@ -125,14 +126,28 @@ async function deletePet(petId) {
         const data = await response.json();
 
         if (data.success) {
-            alert('✅ Reporte eliminado correctamente');
-            window.location.href = 'index.html';
+            Swal.fire({
+                icon: 'success',
+                title: '¡Eliminado!',
+                text: 'El reporte fue eliminado correctamente',
+            }).then(() => {
+                window.location.href = 'index.html';
+            });
         } else {
-            alert('❌ No se pudo eliminar el reporte: ' + (data.error || 'Error desconocido'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo eliminar el reporte: ' + (data.error || 'Error desconocido'),
+            });
         }
+
     } catch (error) {
         console.error('Error al eliminar:', error);
-        alert('⚠️ Error de conexión con el servidor');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor.',
+        });
     }
 }
 
@@ -143,24 +158,32 @@ async function markAsResolved(petId) {
         });
 
         if (response.success) {
-            alert('Reporte marcado como resuelto');
-            window.location.reload();
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Reporte marcado como resuelto',
+            }).then(() => {
+                window.location.reload();
+            });
         } else {
-            alert(response.message || 'No se pudo actualizar el reporte');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message || 'No se pudo actualizar el reporte',
+            });
         }
+
     } catch (error) {
         console.error('Error al marcar como resuelto:', error);
-        alert('Error al actualizar el reporte');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al actualizar el reporte.',
+        });
     }
 }
 
-function showPetNotFound() {
-    document.getElementById('loadingPet').style.display = 'none';
-    document.getElementById('petNotFound').style.display = 'block';
-}
-
 // --- Edición ---
-
 function setupEditModalHandlers() {
     document.getElementById('closeEditModal').onclick = () => {
         document.getElementById('editModal').style.display = 'none';
@@ -239,10 +262,8 @@ async function openEditModal(pet) {
     const modal = document.getElementById('editModal');
     modal.style.display = 'flex';
 
-    // Carga select opciones
     await cargarOpciones();
 
-    // Rellenar campos con info pet
     document.getElementById('editName').value = pet.name || '';
     document.getElementById('editDescription').value = pet.description || '';
     document.getElementById('editPhone').value = pet.phone || '';
