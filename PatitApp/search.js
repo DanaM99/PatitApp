@@ -4,15 +4,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const filtersForm = document.getElementById("searchForm");
   const clearFiltersBtn = document.getElementById("clearFiltersBtn");
 
+  const allViewBtn = document.getElementById("allViewBtn");
+  const listViewBtn = document.getElementById("listViewBtn");
+  const mapViewBtn = document.getElementById("mapViewBtn");
+
   const app = {
     allPets: [],
     currentPage: 1,
     itemsPerPage: 12,
+    currentStatus: null, // Mostrar todos por defecto
 
     async init() {
       this.bindEvents();
       await this.fetchAllPets();
-      await this.cargarZonas(); // <-- Cargar zonas desde la BD
+      await this.cargarZonas();
+      this.setActiveButton(allViewBtn); // Activar botón "Todas" por defecto
       this.renderPets();
     },
 
@@ -33,17 +39,39 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      document.getElementById("listViewBtn").addEventListener("click", () => {
+      allViewBtn.addEventListener("click", () => {
+        this.currentStatus = null;
+        this.setActiveButton(allViewBtn);
         document.getElementById("listView").style.display = "grid";
         document.getElementById("mapView").style.display = "none";
-        this.renderPets("activa");
+        this.currentPage = 1;
+        this.renderPets();
       });
 
-      document.getElementById("mapViewBtn").addEventListener("click", () => {
-        document.getElementById("listView").style.display = "none";
-        document.getElementById("mapView").style.display = "block";
-        this.renderPets("resuelta");
+      listViewBtn.addEventListener("click", () => {
+        this.currentStatus = "1"; // Activo
+        this.setActiveButton(listViewBtn);
+        document.getElementById("listView").style.display = "grid";
+        document.getElementById("mapView").style.display = "none";
+        this.currentPage = 1;
+        this.renderPets();
       });
+
+      mapViewBtn.addEventListener("click", () => {
+        this.currentStatus = "2"; // Resuelto
+        this.setActiveButton(mapViewBtn);
+        document.getElementById("listView").style.display = "grid";
+        document.getElementById("mapView").style.display = "none";
+        this.currentPage = 1;
+        this.renderPets();
+      });
+    },
+
+    setActiveButton(activeBtn) {
+      [allViewBtn, listViewBtn, mapViewBtn].forEach((btn) =>
+        btn.classList.remove("active")
+      );
+      activeBtn.classList.add("active");
     },
 
     async fetchAllPets() {
@@ -65,8 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         zonas.forEach((zona) => {
           const option = document.createElement("option");
-          option.value = zona.nombre.toLowerCase(); // ej: "zona norte"
-          option.textContent = zona.nombre;         // ej: "Zona Norte"
+          option.value = zona.nombre.toLowerCase();
+          option.textContent = zona.nombre;
           select.appendChild(option);
         });
       } catch (error) {
@@ -85,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return filters;
     },
 
-    renderPets(forcedStatus = null) {
+    renderPets() {
       petContainer.innerHTML = "";
 
       const filters = this.getFilters();
@@ -105,11 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
           cumple = false;
         }
 
-        if (filters.status && pet.report_status.toLowerCase() !== filters.status) {
-          cumple = false;
-        }
-
-        if (forcedStatus && pet.report_status.toLowerCase() !== forcedStatus) {
+        if (this.currentStatus && pet.idEstadoReporte.toString() !== this.currentStatus) {
           cumple = false;
         }
 
